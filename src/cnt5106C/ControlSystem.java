@@ -81,11 +81,11 @@ public class ControlSystem {
 				System.out.println("Positively creating a socket to " + peers.get(i).address + " " + peers.get(i).port);
 				Socket beforeSocket = new Socket(peers.get(i).address, peers.get(i).port);
 				//Create the upstream handler.
-				UpstreamHandler uploadThread = new UpstreamHandler(beforeSocket, peers, messageQueue);
-				uploadThread.start();
+				UpstreamHandler sendingThread = new UpstreamHandler(beforeSocket, peers, messageQueue);
+				sendingThread.start();
 				//Create the downstream handler.
-				DownstreamHandler downloadThread = new DownstreamHandler(beforeSocket, peers, messageQueue);
-				downloadThread.start();
+				DownstreamHandler receivingThread = new DownstreamHandler(beforeSocket, peers, messageQueue);
+				receivingThread.start();
 			}catch(Exception e) {
 				e.printStackTrace();
 			}

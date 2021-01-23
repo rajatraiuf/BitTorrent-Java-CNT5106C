@@ -7,6 +7,7 @@ package cnt5106C;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -16,6 +17,16 @@ public class UpstreamHandler extends Thread{
 	private ArrayList<PeerInfo> peers; //The peerInfo of the remote hosts.
 	private ObjectOutputStream output;//The output stream of the socket.
 	private LinkedBlockingQueue<InterThreadMessage> queue;//The message queue for thread communication.
+	
+	private void send(String msg) {
+		try {
+			output.writeObject(msg);
+			output.flush();
+			System.out.println("Send a message of " + msg);
+		}catch(IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	/**
 	 * The constructor of the thread. We need the socket, peerInfo and message queue to create the new thread.
@@ -41,7 +52,12 @@ public class UpstreamHandler extends Thread{
 	public void run() {
 		System.out.println("Upstream thread start to work.");
 		while(true) {
-			
+			try {
+				Thread.sleep(1000);
+				send("hi" + LocalTime.now());
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }

@@ -40,7 +40,12 @@ public class DownstreamHandler extends Thread{
 	public void run() {
 		System.out.println("Downstream thread start to work.");
 		while(true) {
-			
+			try {
+				String msg = (String) input.readObject();
+				System.out.println("Receive message of " + msg);
+			} catch (IOException | ClassNotFoundException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }
