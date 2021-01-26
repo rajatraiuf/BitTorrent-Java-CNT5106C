@@ -80,10 +80,10 @@ public class ControlSystem {
 				System.out.println("Positively creating a socket to " + peers.get(i).address + " " + peers.get(i).port);
 				Socket beforeSocket = new Socket(peers.get(i).address, peers.get(i).port);
 				//Create the upstream handler.
-				UpstreamHandler sendingThread = new UpstreamHandler(beforeSocket, peers, messageQueue);
+				UpstreamHandler sendingThread = new UpstreamHandler(beforeSocket, peers, messageQueue, i, index);
 				sendingThread.start();
 				//Create the downstream handler.
-				DownstreamHandler receivingThread = new DownstreamHandler(beforeSocket, peers, messageQueue);
+				DownstreamHandler receivingThread = new DownstreamHandler(beforeSocket, peers, messageQueue, i, index);
 				receivingThread.start();
 			}catch(Exception e) {
 				e.printStackTrace();
@@ -93,6 +93,7 @@ public class ControlSystem {
 		//We only need 1 serverSocket since we have only 1 port to listen for each host.
 		ServerSocket serverSocket = new ServerSocket(peers.get(index).port);
 		System.out.println("ServerSocket at port " + peers.get(index).port + " is ready.");
+		int counter = 1;//Keep track of while loops so we can calculate index of peers.
 		try {
 			while(true) {
 				//This is only called by afterward peers. We will positively connect to peers
@@ -102,11 +103,12 @@ public class ControlSystem {
 				InetAddress ipAddress = afterwardSocket.getInetAddress();//Get the ipAddress of remote host from socket.
 				System.out.println("Accepet a socket from "+ ipAddress.getHostName());
 				//Create the upstream handler.
-				UpstreamHandler sendingThread = new UpstreamHandler(afterwardSocket, peers, messageQueue);
+				UpstreamHandler sendingThread = new UpstreamHandler(afterwardSocket, peers, messageQueue, index + counter, index);
 				sendingThread.start();
 				//Create the downstream handler.
-				DownstreamHandler receivingThread = new DownstreamHandler(afterwardSocket, peers, messageQueue);
+				DownstreamHandler receivingThread = new DownstreamHandler(afterwardSocket, peers, messageQueue, index + counter, index);
 				receivingThread.start();
+				counter++;
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
