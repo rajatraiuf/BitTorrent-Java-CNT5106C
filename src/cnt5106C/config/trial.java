@@ -1,3 +1,5 @@
+package cnt5106C.config;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;

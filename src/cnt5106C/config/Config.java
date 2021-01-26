@@ -1,4 +1,4 @@
-package src.cnt5106c.config;
+package cnt5106C.config;
 
 import java.util.*;
 import java.io.*;

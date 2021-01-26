@@ -18,7 +18,7 @@ public class UpstreamHandler extends Thread{
 	private ObjectOutputStream output;//The output stream of the socket.
 	private LinkedBlockingQueue<InterThreadMessage> queue;//The message queue for thread communication.
 	
-	private void send(String msg) {
+	public void send(String msg) {
 		try {
 			output.writeObject(msg);
 			output.flush();
