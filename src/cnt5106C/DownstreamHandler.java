@@ -13,7 +13,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class DownstreamHandler extends Thread{
 	private Socket socket; //The socket connected to the remote host.
 	private int index; //Index of the specific remote host to communicate;
-	private ArrayList<PeerInfo> peers; //The peerInfo of the remote hosts.
+	private ArrayList<DynamicPeerInfo> peers; //The peerInfo of the remote hosts.
 	private ObjectInputStream input; //The input stream of the socket.
 	private LinkedBlockingQueue<InterThreadMessage> queue;//The message queue for thread communication.
 	
@@ -23,7 +23,7 @@ public class DownstreamHandler extends Thread{
 	 * @param peerInfo
 	 * @param queue A queue to communicate with other threads.
 	 */
-	DownstreamHandler(Socket socket, ArrayList<PeerInfo> peers, LinkedBlockingQueue<InterThreadMessage> queue){
+	DownstreamHandler(Socket socket, ArrayList<DynamicPeerInfo> peers, LinkedBlockingQueue<InterThreadMessage> queue){
 		this.socket = socket;
 		this.peers = peers;
 		this.queue = queue;

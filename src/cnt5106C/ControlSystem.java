@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import cnt5106C.config.Config;
+import cnt5106C.config.PeerInfo;
 
 import java.io.IOException;
 import java.net.*;
@@ -15,7 +16,7 @@ import java.net.*;
 public class ControlSystem {
 	private static int peerId; //The peerId of this process, reading from console.
 	private static int index; //The index of this process, counting from up to down in peerInfo.cfg
-	public static ArrayList<PeerInfo> peers = new ArrayList<PeerInfo>(); //An array that saves all peerInfos.
+	public static ArrayList<DynamicPeerInfo> peers; //An array that saves all peerInfos.
 	
 	private static int preferredNeighbors; //The number of preferred neighbors.
 	private static int unchokingInterval; //The interval of switching unchocking neighbors.
@@ -41,12 +42,7 @@ public class ControlSystem {
 		pieceSize = Config.getPieceSize();
 		int numOfPieces = fileSize/pieceSize;//How many pieces are there in a file.
 		
-		peers.add(new PeerInfo(1001, "localhost", 6001, true, numOfPieces));
-		peers.add(new PeerInfo(1002, "localhost", 6002, false, numOfPieces));
-		peers.add(new PeerInfo(1003, "localhost", 6003, false, numOfPieces));
-		peers.add(new PeerInfo(1004, "localhost", 6004, false, numOfPieces));
-		peers.add(new PeerInfo(1005, "localhost", 6005, false, numOfPieces));
-		peers.add(new PeerInfo(1006, "localhost", 6006, false, numOfPieces));
+		peers = PeerInfo.readPeerInfo(numOfPieces);
 	}
 	
 	/**
@@ -56,7 +52,7 @@ public class ControlSystem {
 	 */
 	private static int getIndex(int peerId) {
 		int index = 0;
-		for(PeerInfo p : peers){
+		for(DynamicPeerInfo p : peers){
 			if(p.peerId == peerId) {
 				break; //We find this process.
 			}else {

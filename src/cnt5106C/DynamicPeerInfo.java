@@ -8,7 +8,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.BitSet;
 
-public class PeerInfo {
+public class DynamicPeerInfo {
 	public int peerId; //The id of the peer, for example, 1001
 	public String address; //The domain name address of the peer, for example, lin114-00.cise.ufl.edu
 	public InetAddress ipAddress; //The ip address of this peer.
@@ -25,7 +25,7 @@ public class PeerInfo {
 	 * @param hasFileInitially
 	 * @param numOfPieces How many pieces in the file.
 	 */
-	public PeerInfo(int peerId, String address, int port, boolean hasFileInitially, int numOfPieces) {
+	public DynamicPeerInfo(int peerId, String address, int port, boolean hasFileInitially, int numOfPieces) {
 		this.peerId = peerId;
 		this.address = address;
 		try {
