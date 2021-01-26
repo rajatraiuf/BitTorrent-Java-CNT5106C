@@ -39,6 +39,7 @@ public class HandShake implements java.io.Serializable {
         String handShakeMsg = getHeader() + "\n" + getZeroBits() + "\n" + getPeerID();
         return handShakeMsg;
     }
+    /*
     public void SendHandShakeMsg(String msg) {
         ObjectOutputStream out;
         try{
@@ -56,5 +57,6 @@ public class HandShake implements java.io.Serializable {
             System.out.println(e);
         }
     }
+    */
 
 }

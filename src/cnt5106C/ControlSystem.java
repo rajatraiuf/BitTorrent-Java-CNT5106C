@@ -6,6 +6,9 @@ package cnt5106C;
 
 import java.util.ArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
+
+import cnt5106C.config.Config;
+
 import java.io.IOException;
 import java.net.*;
 
@@ -28,14 +31,14 @@ public class ControlSystem {
 	 * Read common.cfg and PeerInfo.cfg into some data structures.
 	 */
 	private static void readConfigFiles() {
-		//TODO This method is not implemented, we just hard code it for test issue.
 		System.out.println("Reading config files.");
-		preferredNeighbors = 3;
-		unchokingInterval = 5;
-		optUnchokingInterval = 10;
-		fileName = "tree.jpg";
-		fileSize = 24301474;
-		pieceSize = 16384;
+		Config.init();
+		preferredNeighbors = Config.getNumberOfPreferredNeighbors();
+		unchokingInterval = Config.getUnchokingInterval();
+		optUnchokingInterval = Config.getOptimisticUnchokingInterval();
+		fileName = Config.getFileName();
+		fileSize = Config.getFileSize();
+		pieceSize = Config.getPieceSize();
 		int numOfPieces = fileSize/pieceSize;//How many pieces are there in a file.
 		
 		peers.add(new PeerInfo(1001, "localhost", 6001, true, numOfPieces));
