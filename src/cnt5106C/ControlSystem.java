@@ -15,7 +15,7 @@ import java.net.*;
 
 public class ControlSystem {
 	private static int peerId; //The peerId of this process, reading from console.
-	private static int index; //The index of this process, counting from up to down in peerInfo.cfg
+	public static int index; //The index of this process, counting from up to down in peerInfo.cfg
 	public static ArrayList<DynamicPeerInfo> peers; //An array that saves all peerInfos.
 	
 	private static int preferredNeighbors; //The number of preferred neighbors.
@@ -25,8 +25,8 @@ public class ControlSystem {
 	private static int fileSize; //The size of the file in bytes.
 	private static int pieceSize; //The size of the piece in bytes.
 	
-	//A queue for all the threads to send message to each other.
-	public static LinkedBlockingQueue<InterThreadMessage> messageQueue = new LinkedBlockingQueue<InterThreadMessage>();
+	//An array of queues for all the threads to send message to each other.
+	public static ArrayList<LinkedBlockingQueue<InterThreadMessage>> messageQueues = new ArrayList<LinkedBlockingQueue<InterThreadMessage>>();
 	
 	/**
 	 * Read common.cfg and PeerInfo.cfg into some data structures.
@@ -73,22 +73,30 @@ public class ControlSystem {
 		readConfigFiles();
 		index = getIndex(peerId); //Find the index of this process.
 		
+		DecisionMaker dm = new DecisionMaker();//The real controller, an individual thread to manage everything
+		dm.start();
+		
 		//We need to create sockets towards all the hosts before our index.
 		for(int i = 0; i < index; i++) {
 			try {
 				//We need to create the socket towards remote port.
 				System.out.println("Positively creating a socket to " + peers.get(i).address + " " + peers.get(i).port);
 				Socket beforeSocket = new Socket(peers.get(i).address, peers.get(i).port);
+				messageQueues.add(new LinkedBlockingQueue<InterThreadMessage>());//New message Queue for new thread.
 				//Create the upstream handler.
-				UpstreamHandler sendingThread = new UpstreamHandler(beforeSocket, peers, messageQueue, i, index);
+				UpstreamHandler sendingThread = new UpstreamHandler(beforeSocket, peers, messageQueues, i, index);
 				sendingThread.start();
 				//Create the downstream handler.
-				DownstreamHandler receivingThread = new DownstreamHandler(beforeSocket, peers, messageQueue, i, index);
+				DownstreamHandler receivingThread = new DownstreamHandler(beforeSocket, peers, messageQueues, i, index);
 				receivingThread.start();
+				
+				peers.get(i).isConnected = true;//Done connection, can send any message to it
 			}catch(Exception e) {
 				e.printStackTrace();
 			}
 		}
+		
+		messageQueues.add(new LinkedBlockingQueue<InterThreadMessage>());//The queue for the local host itself.
 		
 		//We only need 1 serverSocket since we have only 1 port to listen for each host.
 		ServerSocket serverSocket = new ServerSocket(peers.get(index).port);
@@ -102,12 +110,15 @@ public class ControlSystem {
 		
 				InetAddress ipAddress = afterwardSocket.getInetAddress();//Get the ipAddress of remote host from socket.
 				System.out.println("Accepet a socket from "+ ipAddress.getHostName());
+				messageQueues.add(new LinkedBlockingQueue<InterThreadMessage>());//New message Queue for new thread.
 				//Create the upstream handler.
-				UpstreamHandler sendingThread = new UpstreamHandler(afterwardSocket, peers, messageQueue, index + counter, index);
+				UpstreamHandler sendingThread = new UpstreamHandler(afterwardSocket, peers, messageQueues, index + counter, index);
 				sendingThread.start();
 				//Create the downstream handler.
-				DownstreamHandler receivingThread = new DownstreamHandler(afterwardSocket, peers, messageQueue, index + counter, index);
+				DownstreamHandler receivingThread = new DownstreamHandler(afterwardSocket, peers, messageQueues, index + counter, index);
 				receivingThread.start();
+					
+				peers.get(index + counter).isConnected = true;//Done connection, can send any message to it
 				counter++;
 			}
 		}catch(Exception e) {

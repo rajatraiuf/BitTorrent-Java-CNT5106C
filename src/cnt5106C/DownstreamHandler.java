@@ -16,17 +16,17 @@ public class DownstreamHandler extends Thread{
 	private int myIndex; //Index of the local host.
 	private ArrayList<DynamicPeerInfo> peers; //The peerInfo of the remote hosts.
 	private ObjectInputStream input; //The input stream of the socket.
-	private LinkedBlockingQueue<InterThreadMessage> queue;//The message queue for thread communication.
+	private ArrayList<LinkedBlockingQueue<InterThreadMessage>> queue;//The message queue for thread communication.
 	
 	/**
 	 * The constructor of the thread. We need the socket, peerInfo and message queue to create the new thread.
 	 * @param socket
 	 * @param queue A queue to communicate with other threads.
-	 * @param index TODO
-	 * @param myIndex TODO
+	 * @param index
+	 * @param myIndex
 	 * @param peerInfo
 	 */
-	DownstreamHandler(Socket socket, ArrayList<DynamicPeerInfo> peers, LinkedBlockingQueue<InterThreadMessage> queue, int index, int myIndex){
+	DownstreamHandler(Socket socket, ArrayList<DynamicPeerInfo> peers, ArrayList<LinkedBlockingQueue<InterThreadMessage>> queue, int index, int myIndex){
 		this.socket = socket;
 		this.peers = peers;
 		this.queue = queue;
@@ -48,7 +48,9 @@ public class DownstreamHandler extends Thread{
 			try {
 				String msg = (String) input.readObject();
 				System.out.println("Receive message from peer " + index + " : " + msg);
-			} catch (IOException | ClassNotFoundException e) {
+				//After we receive the msg, we put it into the specific queue, and let upstreamHandler decide how to deal with it.
+				queue.get(index).put(new InterThreadMessage(msg, index, false));
+			} catch (IOException | ClassNotFoundException | InterruptedException e) {
 				e.printStackTrace();
 			}
 		}

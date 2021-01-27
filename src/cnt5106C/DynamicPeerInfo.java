@@ -9,7 +9,9 @@ import java.net.UnknownHostException;
 import java.util.BitSet;
 
 public class DynamicPeerInfo {
-	public int peerId; //The id of the peer, for example, 1001
+	public int index;//Index of the remote peer. Follow the order in peerInfo.cfg
+	public boolean isConnected;//If the local host already established a TCP connection to remote host
+	public int peerId; //The id of the remote peer, for example, 1001
 	public String address; //The domain name address of the peer, for example, lin114-00.cise.ufl.edu
 	public InetAddress ipAddress; //The ip address of this peer.
 	public int port; //The port of the peer, for example, 6001
@@ -24,8 +26,10 @@ public class DynamicPeerInfo {
 	 * @param port
 	 * @param hasFileInitially
 	 * @param numOfPieces How many pieces in the file.
+	 * @param index index of the remote host
 	 */
-	public DynamicPeerInfo(int peerId, String address, int port, boolean hasFileInitially, int numOfPieces) {
+	public DynamicPeerInfo(int peerId, String address, int port, boolean hasFileInitially, int numOfPieces, int index) {
+		this.isConnected = false;
 		this.peerId = peerId;
 		this.address = address;
 		try {
@@ -34,6 +38,7 @@ public class DynamicPeerInfo {
 			e.printStackTrace();
 		}
 		this.port = port;
+		this.index = index;
 		this.hasFileInitially = hasFileInitially;
 		filePieces = new BitSet(numOfPieces);
 	}

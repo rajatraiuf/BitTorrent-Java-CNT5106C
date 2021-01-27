@@ -17,7 +17,7 @@ public class UpstreamHandler extends Thread{
 	private int myIndex; //Index of the local host.
 	private ArrayList<DynamicPeerInfo> peers; //The peerInfo of the remote hosts.
 	private ObjectOutputStream output;//The output stream of the socket.
-	private LinkedBlockingQueue<InterThreadMessage> queue;//The message queue for thread communication.
+	private ArrayList<LinkedBlockingQueue<InterThreadMessage>> queue;//The message queue for thread communication.
 	
 	public void send(String msg) {
 		try {
@@ -33,11 +33,11 @@ public class UpstreamHandler extends Thread{
 	 * The constructor of the thread. We need the socket, peerInfo and message queue to create the new thread.
 	 * @param socket
 	 * @param queue A queue to communicate with other threads.
-	 * @param index TODO
-	 * @param myIndex TODO
+	 * @param index
+	 * @param myIndex
 	 * @param peerInfo
 	 */
-	UpstreamHandler(Socket socket, ArrayList<DynamicPeerInfo> peers, LinkedBlockingQueue<InterThreadMessage> queue, int index, int myIndex){
+	UpstreamHandler(Socket socket, ArrayList<DynamicPeerInfo> peers, ArrayList<LinkedBlockingQueue<InterThreadMessage>> queue, int index, int myIndex){
 		this.socket = socket;
 		this.peers = peers;
 		this.queue = queue;
@@ -58,8 +58,8 @@ public class UpstreamHandler extends Thread{
 		System.out.println("Upstream thread start to work.");
 		while(true) {
 			try {
-				send("Hi, I'm peer " + myIndex + " it's " + LocalTime.now());
-				Thread.sleep(5000);
+				InterThreadMessage message = queue.get(index).take();//This is a blocking queue and supposed to be thread safe
+				message.execute(this);//Core of this project
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

@@ -19,6 +19,7 @@ public class PeerInfo {
 			BufferedReader configFileReader = new BufferedReader(
 				new InputStreamReader(new FileInputStream("PeerInfo.cfg")));
 			String line = null;
+			int index = 0;
 			while ((line = configFileReader.readLine()) != null) {
 				line = line.trim();
 
@@ -28,7 +29,10 @@ public class PeerInfo {
 				tokens[1].trim(),
 				Integer.parseInt(tokens[2].trim()),
 				tokens[3].trim() == "1",
-				numOfPieces));
+				numOfPieces,
+				index));
+				
+				index++;
 			}
 		} catch (IOException e) {
 			System.err.println("File not loaded");
