@@ -84,10 +84,10 @@ public class ControlSystem {
 				Socket beforeSocket = new Socket(peers.get(i).address, peers.get(i).port);
 				messageQueues.add(new LinkedBlockingQueue<InterThreadMessage>());//New message Queue for new thread.
 				//Create the upstream handler.
-				UpstreamHandler sendingThread = new UpstreamHandler(beforeSocket, peers, messageQueues, i, index);
+				MessageSendingThread sendingThread = new MessageSendingThread(beforeSocket, peers, messageQueues, i, index);
 				sendingThread.start();
 				//Create the downstream handler.
-				DownstreamHandler receivingThread = new DownstreamHandler(beforeSocket, peers, messageQueues, i, index);
+				MessageReceivingThread receivingThread = new MessageReceivingThread(beforeSocket, peers, messageQueues, i, index);
 				receivingThread.start();
 				
 				peers.get(i).isConnected = true;//Done connection, can send any message to it
@@ -112,10 +112,10 @@ public class ControlSystem {
 				System.out.println("Accepet a socket from "+ ipAddress.getHostName());
 				messageQueues.add(new LinkedBlockingQueue<InterThreadMessage>());//New message Queue for new thread.
 				//Create the upstream handler.
-				UpstreamHandler sendingThread = new UpstreamHandler(afterwardSocket, peers, messageQueues, index + counter, index);
+				MessageSendingThread sendingThread = new MessageSendingThread(afterwardSocket, peers, messageQueues, index + counter, index);
 				sendingThread.start();
 				//Create the downstream handler.
-				DownstreamHandler receivingThread = new DownstreamHandler(afterwardSocket, peers, messageQueues, index + counter, index);
+				MessageReceivingThread receivingThread = new MessageReceivingThread(afterwardSocket, peers, messageQueues, index + counter, index);
 				receivingThread.start();
 					
 				peers.get(index + counter).isConnected = true;//Done connection, can send any message to it
