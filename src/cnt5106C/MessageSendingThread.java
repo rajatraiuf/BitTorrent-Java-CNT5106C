@@ -9,40 +9,38 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class MessageSendingThread extends Thread{
 	private Socket socket; //The socket connected to the remote host.
-	private int index; //Index of the specific remote host to communicate;
-	private int myIndex; //Index of the local host.
+	private int remotePeerIndex; //Index of the specific remote host to communicate;
+	private int localIndex; //Index of the local host.
 	private ArrayList<DynamicPeerInfo> peers; //The peerInfo of the remote hosts.
 	private ObjectOutputStream output;//The output stream of the socket.
-	private ArrayList<LinkedBlockingQueue<InterThreadMessage>> queue;//The message queue for thread communication.
+	private ArrayList<LinkedBlockingQueue<Message>> queues;//The message queue for thread communication.
 	
-	public void send(String msg) {
+	public void send(byte[] msg) {
 		try {
 			output.writeObject(msg);
 			output.flush();
-			System.out.println("Send a message to peer " + index + " : " + msg);
+			//System.out.println("Send a message to peer " + remotePeerIndex + " : " + Arrays.toString(msg));
 		}catch(IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	/**
-	 * The constructor of the thread. We need the socket, peerInfo and message queue to create the new thread.
+	 * The constructor of the thread.
 	 * @param socket
-	 * @param queue A queue to communicate with other threads.
-	 * @param index
-	 * @param myIndex
-	 * @param peerInfo
+	 * @param remotePeerIndex
 	 */
-	MessageSendingThread(Socket socket, ArrayList<DynamicPeerInfo> peers, ArrayList<LinkedBlockingQueue<InterThreadMessage>> queue, int index, int myIndex){
+	MessageSendingThread(Socket socket, int remotePeerIndex){
 		this.socket = socket;
-		this.peers = peers;
-		this.queue = queue;
-		this.index = index;
-		this.myIndex = myIndex;
+		this.peers = ControlSystem.peers;
+		this.queues = ControlSystem.messageQueues;
+		this.remotePeerIndex = remotePeerIndex;
+		this.localIndex = ControlSystem.index;
 		try {
 			output = new ObjectOutputStream(socket.getOutputStream());
 			output.flush();
@@ -55,12 +53,12 @@ public class MessageSendingThread extends Thread{
 	 *Run the thread.
 	 */
 	public void run() {
-		System.out.println("Upstream thread start to work.");
+		System.out.println("MessageSendingThread start to work.");
 		while(true) {
 			try {
-				InterThreadMessage message = queue.get(index).take();//This is a blocking queue and supposed to be thread safe
+				Message message = queues.get(remotePeerIndex).take();//This is a blocking queue and supposed to be thread safe
 				message.execute(this);//Core of this project
-			} catch (InterruptedException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}

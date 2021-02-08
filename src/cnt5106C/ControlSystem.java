@@ -26,7 +26,7 @@ public class ControlSystem {
 	private static int pieceSize; //The size of the piece in bytes.
 	
 	//An array of queues for all the threads to send message to each other.
-	public static ArrayList<LinkedBlockingQueue<InterThreadMessage>> messageQueues = new ArrayList<LinkedBlockingQueue<InterThreadMessage>>();
+	public static ArrayList<LinkedBlockingQueue<Message>> messageQueues = new ArrayList<LinkedBlockingQueue<Message>>();
 	
 	/**
 	 * Read common.cfg and PeerInfo.cfg into some data structures.
@@ -82,21 +82,24 @@ public class ControlSystem {
 				//We need to create the socket towards remote port.
 				System.out.println("Positively creating a socket to " + peers.get(i).address + " " + peers.get(i).port);
 				Socket beforeSocket = new Socket(peers.get(i).address, peers.get(i).port);
-				messageQueues.add(new LinkedBlockingQueue<InterThreadMessage>());//New message Queue for new thread.
+				messageQueues.add(new LinkedBlockingQueue<Message>());//New message Queue for new thread.
 				//Create the upstream handler.
-				MessageSendingThread sendingThread = new MessageSendingThread(beforeSocket, peers, messageQueues, i, index);
+				MessageSendingThread sendingThread = new MessageSendingThread(beforeSocket, i);
 				sendingThread.start();
 				//Create the downstream handler.
-				MessageReceivingThread receivingThread = new MessageReceivingThread(beforeSocket, peers, messageQueues, i, index);
+				MessageReceivingThread receivingThread = new MessageReceivingThread(beforeSocket, i);
 				receivingThread.start();
 				
 				peers.get(i).isConnected = true;//Done connection, can send any message to it
+				
+				//We send a handshake message after TCP connection established
+				messageQueues.get(i).put(HandshakeHandler.construct(i));
 			}catch(Exception e) {
 				e.printStackTrace();
 			}
 		}
 		
-		messageQueues.add(new LinkedBlockingQueue<InterThreadMessage>());//The queue for the local host itself.
+		messageQueues.add(new LinkedBlockingQueue<Message>());//The queue for the local host itself.
 		
 		//We only need 1 serverSocket since we have only 1 port to listen for each host.
 		ServerSocket serverSocket = new ServerSocket(peers.get(index).port);
@@ -110,15 +113,19 @@ public class ControlSystem {
 		
 				InetAddress ipAddress = afterwardSocket.getInetAddress();//Get the ipAddress of remote host from socket.
 				System.out.println("Accepet a socket from "+ ipAddress.getHostName());
-				messageQueues.add(new LinkedBlockingQueue<InterThreadMessage>());//New message Queue for new thread.
+				messageQueues.add(new LinkedBlockingQueue<Message>());//New message Queue for new thread.
 				//Create the upstream handler.
-				MessageSendingThread sendingThread = new MessageSendingThread(afterwardSocket, peers, messageQueues, index + counter, index);
+				MessageSendingThread sendingThread = new MessageSendingThread(afterwardSocket, index + counter);
 				sendingThread.start();
 				//Create the downstream handler.
-				MessageReceivingThread receivingThread = new MessageReceivingThread(afterwardSocket, peers, messageQueues, index + counter, index);
+				MessageReceivingThread receivingThread = new MessageReceivingThread(afterwardSocket, index + counter);
 				receivingThread.start();
 					
 				peers.get(index + counter).isConnected = true;//Done connection, can send any message to it
+				
+				//We send a handshake message after TCP connection established
+				messageQueues.get(index + counter).put(HandshakeHandler.construct(index + counter));
+				
 				counter++;
 			}
 		}catch(Exception e) {

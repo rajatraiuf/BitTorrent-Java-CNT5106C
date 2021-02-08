@@ -19,12 +19,14 @@ public class DecisionMaker extends Thread{
 			try {
 				for(DynamicPeerInfo p : ControlSystem.peers) {
 					if(p.isConnected) {
+						/*
 						ControlSystem.messageQueues.get(p.index).put(
-								new InterThreadMessage(
+								new Message(
 										"Hi, i'm peer " + ControlSystem.index + ", it's " + LocalTime.now()
 										, p.index
-										, true)
+										, false)
 								);
+						*/
 					}
 				}
 				sleep(5000);

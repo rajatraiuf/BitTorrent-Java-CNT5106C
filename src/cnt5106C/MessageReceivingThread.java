@@ -8,30 +8,28 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class MessageReceivingThread extends Thread{
 	private Socket socket; //The socket connected to the remote host.
-	private int index; //Index of the specific remote host to communicate;
-	private int myIndex; //Index of the local host.
+	private int remotePeerIndex; //Index of the specific remote host to communicate;
+	private int localIndex; //Index of the local host.
 	private ArrayList<DynamicPeerInfo> peers; //The peerInfo of the remote hosts.
 	private ObjectInputStream input; //The input stream of the socket.
-	private ArrayList<LinkedBlockingQueue<InterThreadMessage>> queues;//The message queue for thread communication.
+	private ArrayList<LinkedBlockingQueue<Message>> queues;//The message queue for thread communication.
 	
 	/**
-	 * The constructor of the thread. We need the socket, peerInfo and message queue to create the new thread.
+	 * The constructor of the thread.
 	 * @param socket
-	 * @param queue A queue to communicate with other threads.
-	 * @param index
-	 * @param myIndex
-	 * @param peerInfo
+	 * @param remotePeerIndex
 	 */
-	MessageReceivingThread(Socket socket, ArrayList<DynamicPeerInfo> peers, ArrayList<LinkedBlockingQueue<InterThreadMessage>> queue, int index, int myIndex){
+	MessageReceivingThread(Socket socket, int remotePeerIndex){
 		this.socket = socket;
-		this.peers = peers;
-		this.queues = queues;
-		this.index = index;
-		this.myIndex = myIndex;
+		this.peers = ControlSystem.peers;
+		this.queues = ControlSystem.messageQueues;
+		this.remotePeerIndex = remotePeerIndex;
+		this.localIndex = ControlSystem.index;
 		try {
 			input = new ObjectInputStream(socket.getInputStream());
 		} catch (IOException e) {
@@ -43,13 +41,13 @@ public class MessageReceivingThread extends Thread{
 	 *Run the thread.
 	 */
 	public void run() {
-		System.out.println("Downstream thread start to work.");
+		System.out.println("MessageReceivingThread start to work.");
 		while(true) {
 			try {
-				String msg = (String) input.readObject();
-				System.out.println("Receive message from peer " + index + " : " + msg);
+				byte[] msg = (byte[]) input.readObject();
+				//System.out.println("Receive message from peer " + remotePeerIndex + " : " + Arrays.toString(msg));
 				//After we receive the msg, we put it into the specific queue, and let upstreamHandler decide how to deal with it.
-				queues.get(index).put(new InterThreadMessage(msg, index, false));
+				queues.get(remotePeerIndex).put(new Message(msg, remotePeerIndex, true));
 			} catch (IOException | ClassNotFoundException | InterruptedException e) {
 				e.printStackTrace();
 			}
