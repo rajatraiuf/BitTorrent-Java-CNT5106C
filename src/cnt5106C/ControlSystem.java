@@ -14,11 +14,11 @@ import java.io.IOException;
 import java.net.*;
 
 public class ControlSystem {
-	private static int peerId; //The peerId of this process, reading from console.
+	public static int peerId; //The peerId of this process, reading from console.
 	public static int index; //The index of this process, counting from up to down in peerInfo.cfg
 	public static ArrayList<DynamicPeerInfo> peers; //An array that saves all peerInfos.
 	
-	private static int preferredNeighbors; //The number of preferred neighbors.
+	protected static int preferredNeighborsCount; //The number of preferred neighbors.
 	private static int unchokingInterval; //The interval of switching unchocking neighbors.
 	private static int optUnchokingInterval; //The interval of switching optimistic unchocking neighbors.
 	private static String fileName; //The name of the file to be distributed.
@@ -27,14 +27,14 @@ public class ControlSystem {
 	
 	//An array of queues for all the threads to send message to each other.
 	public static ArrayList<LinkedBlockingQueue<Message>> messageQueues = new ArrayList<LinkedBlockingQueue<Message>>();
-	
+
 	/**
 	 * Read common.cfg and PeerInfo.cfg into some data structures.
 	 */
 	private static void readConfigFiles() {
 		System.out.println("Reading config files.");
 		Config.init();
-		preferredNeighbors = Config.getNumberOfPreferredNeighbors();
+		preferredNeighborsCount = Config.getNumberOfPreferredNeighbors();
 		unchokingInterval = Config.getUnchokingInterval();
 		optUnchokingInterval = Config.getOptimisticUnchokingInterval();
 		fileName = Config.getFileName();
@@ -61,6 +61,7 @@ public class ControlSystem {
 		}
 		return index;
 	}
+
 	
 	/**
 	 * The main function for every peerProcess.
@@ -72,6 +73,7 @@ public class ControlSystem {
 		peerId = Integer.parseInt(args[0]); //Read PeerId from console arguments.
 		readConfigFiles();
 		index = getIndex(peerId); //Find the index of this process.
+		System.out.println("Degug : current index:"+Integer.toString(index));
 		
 		DecisionMaker dm = new DecisionMaker();//The real controller, an individual thread to manage everything
 		dm.start();

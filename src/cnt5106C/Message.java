@@ -111,6 +111,9 @@ public class Message {
 				case 7:
 					//TODO piece message
 					break;
+				case 105: 
+					System.out.println(messagePayload.toString());
+					break;
 				default:
 					//not a legal message
 					throw new Exception();

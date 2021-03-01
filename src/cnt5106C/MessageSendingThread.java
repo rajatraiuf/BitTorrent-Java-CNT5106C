@@ -24,7 +24,7 @@ public class MessageSendingThread extends Thread{
 		try {
 			output.writeObject(msg);
 			output.flush();
-			//System.out.println("Send a message to peer " + remotePeerIndex + " : " + Arrays.toString(msg));
+			System.out.println("Send a message to peer " + remotePeerIndex );
 		}catch(IOException e) {
 			e.printStackTrace();
 		}
