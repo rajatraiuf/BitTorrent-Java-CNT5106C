@@ -28,6 +28,7 @@ public class BitfieldHandler {
 	public static void handle(Message m) throws Exception {
 		//TODO this is just for testing
 		byte[]payLoad = m.messagePayload;
-		System.out.println("Receive a test bitfield message, whose payload is " + Arrays.toString(payLoad));
+		System.out.println("Receive a test bitfield message");
+		// System.out.println("Receive a test bitfield message, whose payload is " + Arrays.toString(payLoad));
 	}
 }

@@ -81,6 +81,7 @@ public class Message {
 				System.out.println("Decoding a actual message, its type number is " + messageType);
 				if(msg.length == 5) {
 					//check if there is any payload
+					System.out.println("No payload found in message");
 					messagePayload = null;
 				}else {
 					messagePayload = Arrays.copyOfRange(msg, 5, messageLength);
@@ -111,8 +112,8 @@ public class Message {
 				case 7:
 					//TODO piece message
 					break;
-				case 105: 
-					System.out.println(messagePayload.toString());
+				case 8: 
+					System.out.println(new String(messagePayload));
 					break;
 				default:
 					//not a legal message

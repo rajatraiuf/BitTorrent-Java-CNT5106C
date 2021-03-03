@@ -49,7 +49,8 @@ public class HandshakeHandler {
 		msg.put(headerBytes);
 		msg.put(zeroBytes);
 		msg.put(payload);
-		System.out.println("Constructing a handshake message to " + remotePeerIndex + " " + Arrays.toString(msg.array()));
+		// System.out.println("Constructing a handshake message to " + remotePeerIndex + " " + Arrays.toString(msg.array()));
+		System.out.println("Constructing a handshake message to " + remotePeerIndex);
 		return new Message(msg.array(), remotePeerIndex, false);
 	}
 	
@@ -62,7 +63,8 @@ public class HandshakeHandler {
 		if(Arrays.equals(Arrays.copyOfRange(m.msg, 28, m.msg.length)
 				, ByteBuffer.allocate(m.msg.length - 28).putInt(ControlSystem.peers.get(m.remotePeerIndex).peerId).array()
 				)) {
-			System.out.println("Receive a hand shake message from peer " + m.remotePeerIndex + " " + Arrays.toString(m.msg));
+			// System.out.println("Receive a hand shake message from peer " + m.remotePeerIndex + " " + Arrays.toString(m.msg));
+			System.out.println("Receive a hand shake message from peer " + m.remotePeerIndex);
 			
 			//Since it is a handshake message, we want to send a bitfield message to remote peer.
 			Message message = BitfieldHandler.construct(m.remotePeerIndex);

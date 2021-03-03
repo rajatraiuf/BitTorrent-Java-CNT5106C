@@ -45,7 +45,7 @@ public class MessageReceivingThread extends Thread{
 		while(true) {
 			try {
 				byte[] msg = (byte[]) input.readObject();
-				System.out.println("Receive message from peer " + remotePeerIndex + Arrays.);
+				// System.out.println("Receive message from peer " + remotePeerIndex + ;
 				// After we receive the msg, we put it into the specific queue, and let upstreamHandler decide how to deal with it.
 				queues.get(remotePeerIndex).put(new Message(msg, remotePeerIndex, true));
 			} catch (IOException | ClassNotFoundException | InterruptedException e) {
