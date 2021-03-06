@@ -41,5 +41,24 @@ public class DynamicPeerInfo {
 		this.index = index;
 		this.hasFileInitially = hasFileInitially;
 		filePieces = new BitSet(numOfPieces);
+		for(int i = 0; i < numOfPieces; i++) {
+			if(hasFileInitially) {
+				filePieces.set(i, true);
+			}else {
+				filePieces.set(i, false);
+			}
+		}
+	}
+	
+	public synchronized void setFilePieces(int index, boolean value) {
+		filePieces.set(index, value);
+	}
+	
+	public synchronized boolean getFilePieces(int index) {
+		return filePieces.get(index);
+	}
+	
+	public synchronized boolean isFilePiecesEmpty() {
+		return filePieces.isEmpty();
 	}
 }

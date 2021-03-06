@@ -38,20 +38,20 @@ public class HandshakeHandler {
 	
 	/**
 	 * Construct a handshake message.
-	 * @param remotePeerIndex the index of remote peer
+	 * @param remotePeerId the index of remote peer
 	 * @return the message just has been constructed
 	 */
-	public static Message construct(int remotePeerIndex) {
+	public static Message construct(int remotePeerId) {
 		//String msg = header + zeroBytes.toString() + ControlSystem.peers.get(ControlSystem.index).peerId;
 		byte[] headerBytes = header.getBytes();
-		byte[] payload = ByteBuffer.allocate(4).putInt(ControlSystem.peers.get(ControlSystem.index).peerId).array();
+		byte[] payload = ByteBuffer.allocate(4).putInt(ControlSystem.peerId).array();
 		ByteBuffer msg = ByteBuffer.allocate(headerBytes.length + 10 + payload.length);
 		msg.put(headerBytes);
 		msg.put(zeroBytes);
 		msg.put(payload);
 		// System.out.println("Constructing a handshake message to " + remotePeerIndex + " " + Arrays.toString(msg.array()));
-		System.out.println("Constructing a handshake message to " + remotePeerIndex);
-		return new Message(msg.array(), remotePeerIndex, false);
+		System.out.println("Constructing a handshake message to " + remotePeerId);
+		return new Message(msg.array(), remotePeerId, false);
 	}
 	
 	/**
@@ -61,17 +61,24 @@ public class HandshakeHandler {
 	 */
 	public static void handle(Message m) throws Exception {
 		if(Arrays.equals(Arrays.copyOfRange(m.msg, 28, m.msg.length)
-				, ByteBuffer.allocate(m.msg.length - 28).putInt(ControlSystem.peers.get(m.remotePeerIndex).peerId).array()
+				, ByteBuffer.allocate(m.msg.length - 28).putInt(m.remotePeerId).array()
 				)) {
 			// System.out.println("Receive a hand shake message from peer " + m.remotePeerIndex + " " + Arrays.toString(m.msg));
-			System.out.println("Receive a hand shake message from peer " + m.remotePeerIndex);
+			System.out.println("Receive a hand shake message from peer " + m.remotePeerId);
 			
-			//Since it is a handshake message, we want to send a bitfield message to remote peer.
-			Message message = BitfieldHandler.construct(m.remotePeerIndex);
-			System.out.println("So we send a bitfield message to it " + Arrays.toString(message.msg));
-			ControlSystem.messageQueues.get(m.remotePeerIndex).put(message);//Put it into the right queue to send it.
+			//System.out.println("We have file initially? " + ControlSystem.peers.get(ControlSystem.index).hasFileInitially);
+			//System.out.println("We have any file pieces? " + !ControlSystem.peers.get(ControlSystem.index).isFilePiecesEmpty());
+			if(!ControlSystem.peers.get(ControlSystem.index).isFilePiecesEmpty()) {
+				//Since it is a handshake message, and we have something to send
+				//then we want to send a bitfield message to remote peer.
+				Message message = BitfieldHandler.construct(m.remotePeerId);
+				System.out.println("So we send a bitfield message to it " + Arrays.toString(message.msg));
+				ControlSystem.messageQueues.get(m.remotePeerIndex).put(message);//Put it into the right queue to send it.
+			}
 		}else {
 			//TODO an exception that the peerID doesn't match
+			System.out.println("expected: " + Arrays.toString(ByteBuffer.allocate(m.msg.length - 28).putInt(m.remotePeerId).array()));
+			System.out.println("received: " + Arrays.toString(Arrays.copyOfRange(m.msg, 28, m.msg.length)));
 			throw new Exception();
 		}
 	}

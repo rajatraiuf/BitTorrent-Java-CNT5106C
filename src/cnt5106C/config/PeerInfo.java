@@ -28,7 +28,7 @@ public class PeerInfo {
 				Integer.parseInt(tokens[0].trim()),
 				tokens[1].trim(),
 				Integer.parseInt(tokens[2].trim()),
-				tokens[3].trim() == "1",
+				tokens[3].trim().equals("1"),
 				numOfPieces,
 				index));
 				

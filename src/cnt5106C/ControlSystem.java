@@ -22,8 +22,8 @@ public class ControlSystem {
 	private static int unchokingInterval; //The interval of switching unchocking neighbors.
 	private static int optUnchokingInterval; //The interval of switching optimistic unchocking neighbors.
 	private static String fileName; //The name of the file to be distributed.
-	private static int fileSize; //The size of the file in bytes.
-	private static int pieceSize; //The size of the piece in bytes.
+	static int fileSize; //The size of the file in bytes.
+	static int pieceSize; //The size of the piece in bytes.
 	
 	//An array of queues for all the threads to send message to each other.
 	public static ArrayList<LinkedBlockingQueue<Message>> messageQueues = new ArrayList<LinkedBlockingQueue<Message>>();
@@ -50,7 +50,7 @@ public class ControlSystem {
 	 * @param peerId of that process.
 	 * @return index of that process.
 	 */
-	private static int getIndex(int peerId) {
+	public static int getIndex(int peerId) {
 		int index = 0;
 		for(DynamicPeerInfo p : peers){
 			if(p.peerId == peerId) {
@@ -61,7 +61,6 @@ public class ControlSystem {
 		}
 		return index;
 	}
-
 	
 	/**
 	 * The main function for every peerProcess.
@@ -95,7 +94,7 @@ public class ControlSystem {
 				peers.get(i).isConnected = true;//Done connection, can send any message to it
 				
 				//We send a handshake message after TCP connection established
-				messageQueues.get(i).put(HandshakeHandler.construct(i));
+				messageQueues.get(i).put(HandshakeHandler.construct(peers.get(i).peerId));
 			}catch(Exception e) {
 				e.printStackTrace();
 			}
@@ -126,7 +125,7 @@ public class ControlSystem {
 				peers.get(index + counter).isConnected = true;//Done connection, can send any message to it
 				
 				//We send a handshake message after TCP connection established
-				messageQueues.get(index + counter).put(HandshakeHandler.construct(index + counter));
+				messageQueues.get(index + counter).put(HandshakeHandler.construct(peers.get(index + counter).peerId));
 				
 				counter++;
 			}
