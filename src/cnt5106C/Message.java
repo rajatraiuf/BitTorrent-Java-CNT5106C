@@ -97,9 +97,11 @@ public class Message {
 					break;
 				case 2:
 					//TODO interested message
+					InterestHandler.handle(this);
 					break;
 				case 3:
 					//TODO not interested message
+					InterestHandler.handle(this);
 					break;
 				case 4:
 					//TODO have message

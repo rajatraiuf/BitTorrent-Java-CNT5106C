@@ -19,8 +19,8 @@ public class ControlSystem {
 	public static ArrayList<DynamicPeerInfo> peers; //An array that saves all peerInfos.
 	
 	protected static int preferredNeighborsCount; //The number of preferred neighbors.
-	private static int unchokingInterval; //The interval of switching unchocking neighbors.
-	private static int optUnchokingInterval; //The interval of switching optimistic unchocking neighbors.
+	protected static int unchokingInterval; //The interval of switching unchocking neighbors.
+	protected static int optUnchokingInterval; //The interval of switching optimistic unchocking neighbors.
 	private static String fileName; //The name of the file to be distributed.
 	static int fileSize; //The size of the file in bytes.
 	static int pieceSize; //The size of the piece in bytes.
@@ -113,7 +113,7 @@ public class ControlSystem {
 				Socket afterwardSocket = serverSocket.accept();
 		
 				InetAddress ipAddress = afterwardSocket.getInetAddress();//Get the ipAddress of remote host from socket.
-				System.out.println("Accepet a socket from "+ ipAddress.getHostName());
+				System.out.println("Accept a socket from "+ ipAddress.getHostName());
 				messageQueues.add(new LinkedBlockingQueue<Message>());//New message Queue for new thread.
 				//Create the upstream handler.
 				MessageSendingThread sendingThread = new MessageSendingThread(afterwardSocket, index + counter);

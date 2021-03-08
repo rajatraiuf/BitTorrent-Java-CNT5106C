@@ -27,7 +27,6 @@ public class DecisionMaker extends Thread{
 			while(preferredPeers.size()<ControlSystem.preferredNeighborsCount){
 				int index = (int)(Math.random() * ControlSystem.peers.size()); 
 				// System.out.println("Picking random peer at index"+String.valueOf(index));
-				// System.out.println("Picking random peer at index"+String.valueOf(index));
 				if(index != ControlSystem.index && !preferredPeers.contains(index))
 					preferredPeers.add(index);
 			}
@@ -66,8 +65,8 @@ public class DecisionMaker extends Thread{
 		Timer timerOptUpdate = new Timer();
 		TimerTask task1 = new optimisiticUnchoke();
 		TimerTask task2 = new updatePreferredPeers();
-		timerUpdate.schedule(task1,1000,5000);
-		timerOptUpdate.schedule(task2,6000, 10000);
+		timerUpdate.schedule(task1,1000,ControlSystem.unchokingInterval*1000);
+		timerOptUpdate.schedule(task2,6000, ControlSystem.optUnchokingInterval*1000);
 		while(true) {
 			/*
 			 * The code bellow is only for testing.

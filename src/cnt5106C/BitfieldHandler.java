@@ -60,6 +60,8 @@ public class BitfieldHandler {
 				boolean hasFile = (payLoad[i] & (1 << (7 - j))) != 0;
 				if(hasFile) {
 					ControlSystem.peers.get(m.remotePeerIndex).setFilePieces(indexOfPiece, true);
+					if (!ControlSystem.peers.get(ControlSystem.index).getFilePieces(indexOfPiece)) // If peer does not have a file piece then send an interested message to the neighbor 
+						ControlSystem.messageQueues.get(m.remotePeerIndex).add(InterestHandler.construct(m.remotePeerId, true, indexOfPiece));
 				}else {
 					ControlSystem.peers.get(m.remotePeerIndex).setFilePieces(indexOfPiece, false);
 				}
