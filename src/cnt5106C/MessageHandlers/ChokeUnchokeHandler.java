@@ -35,11 +35,11 @@ public class ChokeUnchokeHandler {
 		//TODO this is just for testing
 		if(isChoke){
 			System.out.println("Received a choke message from peer " + m.remotePeerId);
-			ControlSystem.peers.get(m.remotePeerIndex).isChoked=true;
+			PeerProcess.peers.get(m.remotePeerIndex).isChoked=true;
 		}
 		else{
 			System.out.println("Received a unchoke message from peer " + m.remotePeerId);
-			ControlSystem.peers.get(m.remotePeerIndex).isChoked=true;
+			PeerProcess.peers.get(m.remotePeerIndex).isChoked=true;
 		}
 	}
 }

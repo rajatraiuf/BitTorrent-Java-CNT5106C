@@ -15,7 +15,7 @@ import cnt5106C.MessageHandlers.*;
 import java.io.IOException;
 import java.net.*;
 
-public class ControlSystem {
+public class PeerProcess {
 	public static int peerId; //The peerId of this process, reading from console.
 	public static int index; //The index of this process, counting from up to down in peerInfo.cfg
 	public static ArrayList<DynamicPeerInfo> peers; //An array that saves all peerInfos.

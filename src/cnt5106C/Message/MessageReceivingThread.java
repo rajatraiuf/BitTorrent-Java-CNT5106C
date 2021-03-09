@@ -27,10 +27,10 @@ public class MessageReceivingThread extends Thread{
 	 */
 	public MessageReceivingThread(Socket socket, int remotePeerIndex){
 		this.socket = socket;
-		this.peers = ControlSystem.peers;
-		this.queues = ControlSystem.messageQueues;
+		this.peers = PeerProcess.peers;
+		this.queues = PeerProcess.messageQueues;
 		this.remotePeerIndex = remotePeerIndex;
-		this.localIndex = ControlSystem.index;
+		this.localIndex = PeerProcess.index;
 		try {
 			input = new ObjectInputStream(socket.getInputStream());
 		} catch (IOException e) {
@@ -48,7 +48,7 @@ public class MessageReceivingThread extends Thread{
 				byte[] msg = (byte[]) input.readObject();
 				// System.out.println("Receive message from peer " + remotePeerIndex + ;
 				// After we receive the msg, we put it into the specific queue, and let upstreamHandler decide how to deal with it.
-				queues.get(remotePeerIndex).put(new Message(msg, ControlSystem.peers.get(remotePeerIndex).peerId, true));
+				queues.get(remotePeerIndex).put(new Message(msg, PeerProcess.peers.get(remotePeerIndex).peerId, true));
 			} catch (IOException | ClassNotFoundException | InterruptedException e) {
 				e.printStackTrace();
 			}

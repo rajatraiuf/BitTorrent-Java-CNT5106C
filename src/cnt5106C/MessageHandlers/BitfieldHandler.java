@@ -17,7 +17,7 @@ public class BitfieldHandler {
 	public static Message construct(int remotePeerId) {
 		byte[] messagePayload;//The payload of bitfield;
 		
-		int numOfPieces = ControlSystem.fileSize/ControlSystem.pieceSize;
+		int numOfPieces = PeerProcess.fileSize/PeerProcess.pieceSize;
 		int numOfZeros = (8 - (numOfPieces % 8)) % 8;//Number of zero we need to add in the end
 		int numOfPayloadBytes = (numOfPieces + numOfZeros) / 8;
 		
@@ -27,7 +27,7 @@ public class BitfieldHandler {
 			for(int j = 0; j < 8; j++) {//For each bit in a byte
 				int indexOfPiece = i * 8 + j;
 				if(indexOfPiece < numOfPieces) {
-					boolean hasPiece = ControlSystem.peers.get(ControlSystem.index).getFilePieces(i * 8 + j);
+					boolean hasPiece = PeerProcess.peers.get(PeerProcess.index).getFilePieces(i * 8 + j);
 					if(hasPiece) {
 						onePayload |= (1 << (7 - j));//change the highest jth bit in that byte to 1
 					}else {
@@ -38,7 +38,7 @@ public class BitfieldHandler {
 			messagePayload[i] = onePayload;
 		}
 		
-		System.out.println("peer " + ControlSystem.index + " send a bitfield message to " + remotePeerId + " with payload " + Arrays.toString(messagePayload));
+		System.out.println("peer " + PeerProcess.index + " send a bitfield message to " + remotePeerId + " with payload " + Arrays.toString(messagePayload));
 		
 		return Message.actualMessageWrapper(remotePeerId, 5, messagePayload);
 	}
@@ -51,7 +51,7 @@ public class BitfieldHandler {
 		//TODO this is just for testing
 		byte[]payLoad = m.messagePayload;
 		
-		int numOfPieces = ControlSystem.fileSize/ControlSystem.pieceSize;
+		int numOfPieces = PeerProcess.fileSize/PeerProcess.pieceSize;
 		int numOfZeros = (8 - (numOfPieces % 8)) % 8;//Number of zero we need to add in the end
 		int numOfPayloadBytes = (numOfPieces + numOfZeros) / 8;
 		boolean ifInterested = false;
@@ -61,8 +61,8 @@ public class BitfieldHandler {
 				//we create a mask like 00x00000 and do "and operation" to that received byte
 				boolean hasFile = (payLoad[i] & (1 << (7 - j))) != 0;
 				if(hasFile) {
-					ControlSystem.peers.get(m.remotePeerIndex).setFilePieces(indexOfPiece, true);
-					if (!ControlSystem.peers.get(ControlSystem.index).getFilePieces(indexOfPiece)) // If peer does not have a file piece then send an interested message to the neighbor 
+					PeerProcess.peers.get(m.remotePeerIndex).setFilePieces(indexOfPiece, true);
+					if (!PeerProcess.peers.get(PeerProcess.index).getFilePieces(indexOfPiece)) // If peer does not have a file piece then send an interested message to the neighbor 
 						ifInterested = true;
 				}
 				// }else {
@@ -72,6 +72,6 @@ public class BitfieldHandler {
 		}
 		//TODO create a interest/not interest message and send it
 		System.out.println("Receive a test bitfield message from peer " + m.remotePeerId + ", whose payload is " + Arrays.toString(payLoad));
-		ControlSystem.messageQueues.get(m.remotePeerIndex).add(InterestHandler.construct(m.remotePeerId, ifInterested));
+		PeerProcess.messageQueues.get(m.remotePeerIndex).add(InterestHandler.construct(m.remotePeerId, ifInterested));
 	}
 }

@@ -29,7 +29,7 @@ public class Message {
 	public Message(byte[] msg, int remotePeerId, boolean fromRemotePeer) {
 		this.msg = msg;
 		this.remotePeerId = remotePeerId;
-		this.remotePeerIndex = ControlSystem.getIndex(remotePeerId);
+		this.remotePeerIndex = PeerProcess.getIndex(remotePeerId);
 		this.fromRemotePeer = fromRemotePeer;
 	}
 	

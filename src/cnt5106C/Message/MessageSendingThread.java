@@ -37,10 +37,10 @@ public class MessageSendingThread extends Thread{
 	 */
 	public MessageSendingThread(Socket socket, int remotePeerIndex){
 		this.socket = socket;
-		this.peers = ControlSystem.peers;
-		this.queues = ControlSystem.messageQueues;
+		this.peers = PeerProcess.peers;
+		this.queues = PeerProcess.messageQueues;
 		this.remotePeerIndex = remotePeerIndex;
-		this.localIndex = ControlSystem.index;
+		this.localIndex = PeerProcess.index;
 		try {
 			output = new ObjectOutputStream(socket.getOutputStream());
 			output.flush();

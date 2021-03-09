@@ -7,15 +7,15 @@ import java.io.FileInputStream;
 import java.net.Socket;
 import java.util.ResourceBundle.Control;
 
-import cnt5106C.ControlSystem;
+import cnt5106C.PeerProcess;
 import cnt5106C.config.Config;
 
 public class FileSender {
 //	
 	private static DataOutputStream dataOutputStream = null;
     private static DataInputStream dataInputStream = null;
-    private final static String FILENAME = ControlSystem.fileName;
-    private final static int CHUNKSIZE = ControlSystem.pieceSize;
+    private final static String FILENAME = PeerProcess.fileName;
+    private final static int CHUNKSIZE = PeerProcess.pieceSize;
     private static File file = new File("..\\Files\\"+"\tree.jpg");
 
 	public static void main(String[] args) {

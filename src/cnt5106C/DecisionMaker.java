@@ -18,30 +18,30 @@ public class DecisionMaker extends Thread{
 	{ 
 		public void run() 
 		{ 
-			if (ControlSystem.peers.size()>0)
+			if (PeerProcess.peers.size()>0)
 			{
 				preferredPeers.clear();
 			}
-			if(preferredPeers.size()<ControlSystem.preferredNeighborsCount){
-				int index = (int)(Math.random() * ControlSystem.peers.size()); 
+			if(preferredPeers.size()<PeerProcess.preferredNeighborsCount){
+				int index = (int)(Math.random() * PeerProcess.peers.size()); 
 				// System.out.println("Picking random peer at index"+String.valueOf(index));
-				if(index != ControlSystem.index && !preferredPeers.contains(index) && ControlSystem.peers.get(index).isInterested )
+				if(index != PeerProcess.index && !preferredPeers.contains(index) && PeerProcess.peers.get(index).isInterested )
 					preferredPeers.add(index);
 			}
 			//iterate over all peers to check and send proper choke/unchoke msgs
-			for(DynamicPeerInfo p :ControlSystem.peers) {
+			for(DynamicPeerInfo p :PeerProcess.peers) {
 				if(p.isConnected ) {
 					if(preferredPeers.contains(p.index) && p.isChoked){
-						ControlSystem.messageQueues.get(p.index).add(Message.actualMessageWrapper(p.index , 1,new byte[0]));
+						PeerProcess.messageQueues.get(p.index).add(Message.actualMessageWrapper(p.index , 1,new byte[0]));
 						p.isChoked=false;
 					}
 					else if(!p.isChoked){
-						ControlSystem.messageQueues.get(p.index).add(Message.actualMessageWrapper(p.index , 0,new byte[0]));
+						PeerProcess.messageQueues.get(p.index).add(Message.actualMessageWrapper(p.index , 0,new byte[0]));
 						p.isChoked=true;
 					} 
 				}
 			}
-			System.out.println("Updated " +String.valueOf(ControlSystem.peerId) +" preferred peers to :"+ preferredPeers);
+			System.out.println("Updated " +String.valueOf(PeerProcess.peerId) +" preferred peers to :"+ preferredPeers);
 		} 
 		
 	} 	  
@@ -52,26 +52,26 @@ public class DecisionMaker extends Thread{
 	private class optimisiticUnchoke extends TimerTask 
 	{ 
 		public void run() 
-		{	if(preferredPeers.size()<=ControlSystem.preferredNeighborsCount){
+		{	if(preferredPeers.size()<=PeerProcess.preferredNeighborsCount){
 				// while(true){
-				int index = (int)(Math.random() * ControlSystem.peers.size()); 
-				if(index != ControlSystem.index && !preferredPeers.contains(index) && ControlSystem.peers.get(index).isInterested){
+				int index = (int)(Math.random() * PeerProcess.peers.size()); 
+				if(index != PeerProcess.index && !preferredPeers.contains(index) && PeerProcess.peers.get(index).isInterested){
 					preferredPeers.add(index);
-					DynamicPeerInfo optpeer= ControlSystem.peers.get(index);
+					DynamicPeerInfo optpeer= PeerProcess.peers.get(index);
 					if(optpeer.isConnected ) {
 						if(preferredPeers.contains(index) && optpeer.isChoked){
-							ControlSystem.messageQueues.get(index).add(Message.actualMessageWrapper(ControlSystem.index , 1,new byte[0]));
+							PeerProcess.messageQueues.get(index).add(Message.actualMessageWrapper(PeerProcess.index , 1,new byte[0]));
 							optpeer.isChoked=false;
 						}
 						else if(!optpeer.isChoked){
-								ControlSystem.messageQueues.get(index).add(Message.actualMessageWrapper(ControlSystem.index , 0,new byte[0])); 
+								PeerProcess.messageQueues.get(index).add(Message.actualMessageWrapper(PeerProcess.index , 0,new byte[0])); 
 								optpeer.isChoked=true;
 						}
 					}
 					// break;
 				}
 				// }
-				System.out.println("Optimistic Updated " +String.valueOf(ControlSystem.peerId) +" preferred peers to :"+ preferredPeers);
+				System.out.println("Optimistic Updated " +String.valueOf(PeerProcess.peerId) +" preferred peers to :"+ preferredPeers);
 			}
 		} 
 		
@@ -86,8 +86,8 @@ public class DecisionMaker extends Thread{
 		Timer timerOptUpdate = new Timer();
 		TimerTask task1 = new optimisiticUnchoke();
 		TimerTask task2 = new updatePreferredPeers();
-		timerUpdate.schedule(task1,1000,ControlSystem.unchokingInterval*1000);
-		timerOptUpdate.schedule(task2,6000, ControlSystem.optUnchokingInterval*1000);
+		timerUpdate.schedule(task1,1000,PeerProcess.unchokingInterval*1000);
+		timerOptUpdate.schedule(task2,6000, PeerProcess.optUnchokingInterval*1000);
 		while(true) {
 			/*
 			 * The code bellow is only for testing.
@@ -95,10 +95,10 @@ public class DecisionMaker extends Thread{
 			 */
 			try {
 				for(Integer p: preferredPeers) {
-					if(ControlSystem.peers.get(p).isConnected) {
+					if(PeerProcess.peers.get(p).isConnected) {
 						// System.out.println("CONNECTED HERE");
-						String debugMsg = "Hi, i'm PP peer " + ControlSystem.peerId + ", it's " + LocalTime.now();
-						ControlSystem.messageQueues.get(p).put(
+						String debugMsg = "Hi, i'm PP peer " + PeerProcess.peerId + ", it's " + LocalTime.now();
+						PeerProcess.messageQueues.get(p).put(
 							Message.actualMessageWrapper(p , 8,debugMsg.getBytes()));
 						sleep(100);
 					}	

@@ -35,11 +35,11 @@ public class InterestHandler {
 		//TODO this is just for testing
 		if(isInterested){
 			System.out.println("Receive a interested message from peer " + m.remotePeerId);
-			ControlSystem.peers.get(m.remotePeerIndex).isInterested=true;
+			PeerProcess.peers.get(m.remotePeerIndex).isInterested=true;
 		}
 		else {
 			System.out.println("Receive a not interested message from peer " + m.remotePeerId);
-			ControlSystem.peers.get(m.remotePeerIndex).isInterested=false;
+			PeerProcess.peers.get(m.remotePeerIndex).isInterested=false;
 		}
 	}
 }
