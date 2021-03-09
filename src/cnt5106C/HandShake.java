@@ -1,4 +1,4 @@
-package cnt5106C.handshake;
+package cnt5106C;
 
 import java.io.*;
 

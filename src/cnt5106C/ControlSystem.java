@@ -9,6 +9,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import cnt5106C.config.Config;
 import cnt5106C.config.PeerInfo;
+import cnt5106C.Message.*;
+import cnt5106C.MessageHandlers.*;
 
 import java.io.IOException;
 import java.net.*;
@@ -17,16 +19,17 @@ public class ControlSystem {
 	public static int peerId; //The peerId of this process, reading from console.
 	public static int index; //The index of this process, counting from up to down in peerInfo.cfg
 	public static ArrayList<DynamicPeerInfo> peers; //An array that saves all peerInfos.
+	public static String fileName; //The name of the file to be distributed.
+	public static int fileSize; //The size of the file in bytes.
+	public static int pieceSize; //The size of the piece in bytes.
+
+	//An array of queues for all the threads to send message to each other.
+	public static ArrayList<LinkedBlockingQueue<Message>> messageQueues = new ArrayList<LinkedBlockingQueue<Message>>();
 	
 	protected static int preferredNeighborsCount; //The number of preferred neighbors.
 	protected static int unchokingInterval; //The interval of switching unchocking neighbors.
 	protected static int optUnchokingInterval; //The interval of switching optimistic unchocking neighbors.
-	private static String fileName; //The name of the file to be distributed.
-	static int fileSize; //The size of the file in bytes.
-	static int pieceSize; //The size of the piece in bytes.
 	
-	//An array of queues for all the threads to send message to each other.
-	public static ArrayList<LinkedBlockingQueue<Message>> messageQueues = new ArrayList<LinkedBlockingQueue<Message>>();
 
 	/**
 	 * Read common.cfg and PeerInfo.cfg into some data structures.

@@ -2,10 +2,12 @@
  * The data structure which is used by different threads in a host to communicate with each other.
  */
 
-package cnt5106C;
+package cnt5106C.Message;
 
 import java.nio.*;
 import java.util.Arrays;
+import cnt5106C.*;
+import cnt5106C.MessageHandlers.*;
 
 public class Message {
 	public byte[] msg;//The context of the msg
@@ -80,10 +82,10 @@ public class Message {
 				//We use ByteBuffer to wrap byte array to integer
 				messageLength = ByteBuffer.wrap(Arrays.copyOfRange(msg, 0, 4)).getInt();
 				messageType = msg[4];
-				System.out.println("Decoding a actual message, its type number is " + messageType);
+				// System.out.println("Decoding a actual message, its type number is " + messageType);
 				if(msg.length == 5) {
 					//check if there is any payload
-					System.out.println("No payload found in message");
+					// System.out.println("No payload found in message");
 					messagePayload = null;
 				}else {
 					messagePayload = Arrays.copyOfRange(msg, 5, messageLength);
@@ -91,17 +93,19 @@ public class Message {
 				switch(messageType) {
 				case 0:
 					//TODO choke message
+					ChokeUnchokeHandler.handle(this,true);
 					break;
 				case 1:
 					//TODO unchoke message
+					ChokeUnchokeHandler.handle(this,false);
 					break;
 				case 2:
 					//TODO interested message
-					InterestHandler.handle(this);
+					InterestHandler.handle(this,true);
 					break;
 				case 3:
 					//TODO not interested message
-					InterestHandler.handle(this);
+					InterestHandler.handle(this,false);
 					break;
 				case 4:
 					//TODO have message

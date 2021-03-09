@@ -1,10 +1,12 @@
 /*
  * The handler to handle any functionalities about handshake message.
  */
-package cnt5106C;
+package cnt5106C.MessageHandlers;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import cnt5106C.*;
+import cnt5106C.Message.*;
 
 public class HandshakeHandler {
 	private static String header = "P2PFILESHARINGPROJ";//TODO it is temporary
@@ -77,7 +79,7 @@ public class HandshakeHandler {
 			}
 		}else {
 			//TODO an exception that the peerID doesn't match
-			System.out.println("expected: " + Arrays.toString(ByteBuffer.allocate(m.msg.length - 28).putInt(m.remotePeerId).array()));
+			System.out.println("Error: Bad Handshake received!\n expected: " + Arrays.toString(ByteBuffer.allocate(m.msg.length - 28).putInt(m.remotePeerId).array()));
 			System.out.println("received: " + Arrays.toString(Arrays.copyOfRange(m.msg, 28, m.msg.length)));
 			throw new Exception();
 		}

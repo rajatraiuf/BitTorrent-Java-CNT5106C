@@ -2,9 +2,11 @@
  * The handler to handle any functionalities about bitfield message.
  */
 
-package cnt5106C;
+package cnt5106C.MessageHandlers;
 
 import java.util.Arrays;
+import cnt5106C.*;
+import cnt5106C.Message.*;
 
 public class BitfieldHandler {
 	/**
@@ -52,7 +54,7 @@ public class BitfieldHandler {
 		int numOfPieces = ControlSystem.fileSize/ControlSystem.pieceSize;
 		int numOfZeros = (8 - (numOfPieces % 8)) % 8;//Number of zero we need to add in the end
 		int numOfPayloadBytes = (numOfPieces + numOfZeros) / 8;
-		
+		boolean ifInterested = false;
 		for(int i = 0; i < numOfPayloadBytes; i++) {//For each byte in payload
 			for(int j = 0; j < 8; j++) {//For each bit in a byte
 				int indexOfPiece = i * 8 + j;
@@ -61,15 +63,15 @@ public class BitfieldHandler {
 				if(hasFile) {
 					ControlSystem.peers.get(m.remotePeerIndex).setFilePieces(indexOfPiece, true);
 					if (!ControlSystem.peers.get(ControlSystem.index).getFilePieces(indexOfPiece)) // If peer does not have a file piece then send an interested message to the neighbor 
-						ControlSystem.messageQueues.get(m.remotePeerIndex).add(InterestHandler.construct(m.remotePeerId, true, indexOfPiece));
-				}else {
-					ControlSystem.peers.get(m.remotePeerIndex).setFilePieces(indexOfPiece, false);
+						ifInterested = true;
 				}
+				// }else {
+				// 	ControlSystem.peers.get(m.remotePeerIndex).setFilePieces(indexOfPiece, false);
+				// }
 			}
 		}
-		
 		//TODO create a interest/not interest message and send it
-		
 		System.out.println("Receive a test bitfield message from peer " + m.remotePeerId + ", whose payload is " + Arrays.toString(payLoad));
+		ControlSystem.messageQueues.get(m.remotePeerIndex).add(InterestHandler.construct(m.remotePeerId, ifInterested));
 	}
 }
