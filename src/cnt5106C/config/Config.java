@@ -14,7 +14,7 @@ public class Config {
 	public static void init() {
 		cfg = new Properties();
         try {
-            InputStream in = new FileInputStream("C:\\Users\\Rajat Rai\\Projects\\BitTorrent\\BitTorrent-Java-CNT5106C\\src\\cnt5106C\\config\\Common.cfg");
+            InputStream in = new FileInputStream("Common.cfg");
             cfg.load(in);
         }
         catch(Exception e){

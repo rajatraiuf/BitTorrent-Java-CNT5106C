@@ -28,7 +28,7 @@ public class FileSender {
             dataOutputStream = new DataOutputStream(socket.getOutputStream());
             
 
-            sendFile();
+            //sendFile();
 
             System.out.println("File Sent");
             

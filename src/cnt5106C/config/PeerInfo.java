@@ -17,7 +17,7 @@ public class PeerInfo {
 		ArrayList<DynamicPeerInfo> peers = new ArrayList<DynamicPeerInfo>();
 		try {
 			BufferedReader configFileReader = new BufferedReader(
-				new InputStreamReader(new FileInputStream("C:\\Users\\Rajat Rai\\Projects\\BitTorrent\\BitTorrent-Java-CNT5106C\\src\\cnt5106C\\config\\PeerInfo.cfg")));
+				new InputStreamReader(new FileInputStream("PeerInfo.cfg")));
 			String line = null;
 			int index = 0;
 			while ((line = configFileReader.readLine()) != null) {

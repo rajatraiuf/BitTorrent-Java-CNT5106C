@@ -19,7 +19,7 @@ public class ChokeUnchokeHandler {
 	public static Message construct(int remotePeerId, boolean isChoke) {
 		if (isChoke){
 			System.out.println("sending interested byte field"+remotePeerId);
-			return Message.actualMessageWrapper(remotePeerId, 2 , new byte[1]([true]));
+			return Message.actualMessageWrapper(remotePeerId, 2 , new byte[0]);
 		}
 		else {
 			System.out.println("sending not interested byte field"+remotePeerId);
