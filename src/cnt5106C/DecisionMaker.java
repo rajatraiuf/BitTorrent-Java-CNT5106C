@@ -100,7 +100,8 @@ public class DecisionMaker extends Thread{
 						String debugMsg = "Hi, i'm PP peer " + ControlSystem.peerId + ", it's " + LocalTime.now();
 						ControlSystem.messageQueues.get(p).put(
 							Message.actualMessageWrapper(p , 8,debugMsg.getBytes()));
-					}
+						sleep(100);
+					}	
 					else{
 						// System.out.println("NOT CONNECTED");
 
