@@ -32,11 +32,12 @@ public class DecisionMaker extends Thread{
 			for(DynamicPeerInfo p :ControlSystem.peers) {
 				if(p.isConnected ) {
 					if(preferredPeers.contains(p.index) && p.isChoked){
-						ControlSystem.messageQueues.get(p.index).add(Message.actualMessageWrapper(p.index , 0,new byte[0]));
+						ControlSystem.messageQueues.get(p.index).add(Message.actualMessageWrapper(p.index , 1,new byte[0]));
+						p.isChoked=false;
 					}
-					else {
-						if(!p.isChoked)
-							ControlSystem.messageQueues.get(p.index).add(Message.actualMessageWrapper(p.index , 1,new byte[0]));
+					else if(!p.isChoked){
+						ControlSystem.messageQueues.get(p.index).add(Message.actualMessageWrapper(p.index , 0,new byte[0]));
+						p.isChoked=true;
 					} 
 				}
 			}
@@ -59,12 +60,13 @@ public class DecisionMaker extends Thread{
 					DynamicPeerInfo optpeer= ControlSystem.peers.get(index);
 					if(optpeer.isConnected ) {
 						if(preferredPeers.contains(index) && optpeer.isChoked){
-							ControlSystem.messageQueues.get(index).add(Message.actualMessageWrapper(ControlSystem.index , 0,new byte[0]));
+							ControlSystem.messageQueues.get(index).add(Message.actualMessageWrapper(ControlSystem.index , 1,new byte[0]));
+							optpeer.isChoked=false;
 						}
-						else {
-							if(!optpeer.isChoked)
-								ControlSystem.messageQueues.get(index).add(Message.actualMessageWrapper(ControlSystem.index , 1,new byte[0]));
-						} 
+						else if(!optpeer.isChoked){
+								ControlSystem.messageQueues.get(index).add(Message.actualMessageWrapper(ControlSystem.index , 0,new byte[0])); 
+								optpeer.isChoked=true;
+						}
 					}
 					// break;
 				}
@@ -84,8 +86,8 @@ public class DecisionMaker extends Thread{
 		Timer timerOptUpdate = new Timer();
 		TimerTask task1 = new optimisiticUnchoke();
 		TimerTask task2 = new updatePreferredPeers();
-		timerUpdate.schedule(task1,1000,ControlSystem.unchokingInterval*100);
-		timerOptUpdate.schedule(task2,6000, ControlSystem.optUnchokingInterval*100);
+		timerUpdate.schedule(task1,1000,ControlSystem.unchokingInterval*1000);
+		timerOptUpdate.schedule(task2,6000, ControlSystem.optUnchokingInterval*1000);
 		while(true) {
 			/*
 			 * The code bellow is only for testing.
@@ -98,7 +100,6 @@ public class DecisionMaker extends Thread{
 						String debugMsg = "Hi, i'm PP peer " + ControlSystem.peerId + ", it's " + LocalTime.now();
 						ControlSystem.messageQueues.get(p).put(
 							Message.actualMessageWrapper(p , 8,debugMsg.getBytes()));
-						sleep(3000);
 					}
 					else{
 						// System.out.println("NOT CONNECTED");
