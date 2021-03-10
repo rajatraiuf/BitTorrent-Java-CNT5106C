@@ -22,6 +22,7 @@ public class PeerProcess {
 	public static String fileName; //The name of the file to be distributed.
 	public static int fileSize; //The size of the file in bytes.
 	public static int pieceSize; //The size of the piece in bytes.
+	public static int numOfPieces; //The # of the pieces
 
 	//An array of queues for all the threads to send message to each other.
 	public static ArrayList<LinkedBlockingQueue<Message>> messageQueues = new ArrayList<LinkedBlockingQueue<Message>>();
@@ -43,7 +44,7 @@ public class PeerProcess {
 		fileName = Config.getFileName();
 		fileSize = Config.getFileSize();
 		pieceSize = Config.getPieceSize();
-		int numOfPieces = fileSize/pieceSize;//How many pieces are there in a file.
+		numOfPieces = fileSize/pieceSize;//How many pieces are there in a file.
 		
 		peers = PeerInfo.readPeerInfo(numOfPieces);
 	}
@@ -75,7 +76,6 @@ public class PeerProcess {
 		peerId = Integer.parseInt(args[0]); //Read PeerId from console arguments.
 		readConfigFiles();
 		index = getIndex(peerId); //Find the index of this process.
-		System.out.println("Degug : current index:"+Integer.toString(index));
 		
 		DecisionMaker dm = new DecisionMaker();//The real controller, an individual thread to manage everything
 		dm.start();

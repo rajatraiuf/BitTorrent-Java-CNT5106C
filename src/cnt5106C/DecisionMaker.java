@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import java.util.*;
 
 import cnt5106C.Message.*;
+import cnt5106C.MessageHandlers.ChokeUnchokeHandler;
 
 public class DecisionMaker extends Thread{
 	public Set<Integer> preferredPeers = Collections.synchronizedSet(new HashSet<Integer>()); //An array that maintains preferred peerInfos.
@@ -22,7 +23,7 @@ public class DecisionMaker extends Thread{
 			{
 				preferredPeers.clear();
 			}
-			if(preferredPeers.size()<PeerProcess.preferredNeighborsCount){
+			while(preferredPeers.size()<PeerProcess.preferredNeighborsCount){
 				int index = (int)(Math.random() * PeerProcess.peers.size()); 
 				// System.out.println("Picking random peer at index"+String.valueOf(index));
 				if(index != PeerProcess.index && !preferredPeers.contains(index) && PeerProcess.peers.get(index).isInterested )
@@ -31,12 +32,16 @@ public class DecisionMaker extends Thread{
 			//iterate over all peers to check and send proper choke/unchoke msgs
 			for(DynamicPeerInfo p :PeerProcess.peers) {
 				if(p.isConnected ) {
-					if(preferredPeers.contains(p.index) && p.isChoked){
-						PeerProcess.messageQueues.get(p.index).add(Message.actualMessageWrapper(p.index , 1,new byte[0]));
-						p.isChoked=false;
+					if(preferredPeers.contains(p.index)){
+						if (p.isChoked){
+							System.out.println("Unchoking [choked] random peer at index"+p.peerId);
+							PeerProcess.messageQueues.get(p.index).add(ChokeUnchokeHandler.construct(p.peerId , false));
+							p.isChoked=false;
+						}
 					}
 					else if(!p.isChoked){
-						PeerProcess.messageQueues.get(p.index).add(Message.actualMessageWrapper(p.index , 0,new byte[0]));
+						System.out.println("Choking [unchoked] random peer at index"+p.peerId);
+						PeerProcess.messageQueues.get(p.index).add(ChokeUnchokeHandler.construct(p.peerId , true));
 						p.isChoked=true;
 					} 
 				}
@@ -53,25 +58,22 @@ public class DecisionMaker extends Thread{
 	{ 
 		public void run() 
 		{	if(preferredPeers.size()<=PeerProcess.preferredNeighborsCount){
-				// while(true){
 				int index = (int)(Math.random() * PeerProcess.peers.size()); 
 				if(index != PeerProcess.index && !preferredPeers.contains(index) && PeerProcess.peers.get(index).isInterested){
 					preferredPeers.add(index);
 					DynamicPeerInfo optpeer= PeerProcess.peers.get(index);
 					if(optpeer.isConnected ) {
 						if(preferredPeers.contains(index) && optpeer.isChoked){
-							PeerProcess.messageQueues.get(index).add(Message.actualMessageWrapper(PeerProcess.index , 1,new byte[0]));
+							PeerProcess.messageQueues.get(index).add(ChokeUnchokeHandler.construct(optpeer.peerId, false));
 							optpeer.isChoked=false;
 						}
 						else if(!optpeer.isChoked){
-								PeerProcess.messageQueues.get(index).add(Message.actualMessageWrapper(PeerProcess.index , 0,new byte[0])); 
-								optpeer.isChoked=true;
+									PeerProcess.messageQueues.get(index).add(ChokeUnchokeHandler.construct(optpeer.peerId, true)); 
+									optpeer.isChoked=true;
+							}
 						}
 					}
-					// break;
-				}
-				// }
-				System.out.println("Optimistic Updated " +String.valueOf(PeerProcess.peerId) +" preferred peers to :"+ preferredPeers);
+				System.out.println("Optimistic Updated " +PeerProcess.peerId +" preferred peers to :"+ preferredPeers);
 			}
 		} 
 		
@@ -95,12 +97,12 @@ public class DecisionMaker extends Thread{
 			 */
 			try {
 				for(Integer p: preferredPeers) {
-					if(PeerProcess.peers.get(p).isConnected) {
+					if(PeerProcess.peers.get(p).isConnected && !PeerProcess.peers.get(p).isChoked) {
 						// System.out.println("CONNECTED HERE");
 						String debugMsg = "Hi, i'm PP peer " + PeerProcess.peerId + ", it's " + LocalTime.now();
 						PeerProcess.messageQueues.get(p).put(
 							Message.actualMessageWrapper(p , 8,debugMsg.getBytes()));
-						sleep(100);
+						// sleep(50);
 					}	
 					else{
 						// System.out.println("NOT CONNECTED");

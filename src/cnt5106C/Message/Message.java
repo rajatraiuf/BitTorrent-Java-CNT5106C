@@ -116,6 +116,7 @@ public class Message {
 					break;
 				case 6:
 					//TODO request message
+					RequestHandler.handle(this);
 					break;
 				case 7:
 					//TODO piece message

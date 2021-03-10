@@ -64,10 +64,9 @@ public class BitfieldHandler {
 					PeerProcess.peers.get(m.remotePeerIndex).setFilePieces(indexOfPiece, true);
 					if (!PeerProcess.peers.get(PeerProcess.index).getFilePieces(indexOfPiece)) // If peer does not have a file piece then send an interested message to the neighbor 
 						ifInterested = true;
+				}else {
+					PeerProcess.peers.get(m.remotePeerIndex).setFilePieces(indexOfPiece, false);
 				}
-				// }else {
-				// 	ControlSystem.peers.get(m.remotePeerIndex).setFilePieces(indexOfPiece, false);
-				// }
 			}
 		}
 		//TODO create a interest/not interest message and send it

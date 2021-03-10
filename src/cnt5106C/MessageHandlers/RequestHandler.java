@@ -16,13 +16,10 @@ public class RequestHandler {
 	 * @param remotePeerId the peerid of remote peer
 	 * @return the message just has been constructed
 	 */
-	public static Message construct(int remotePeerId, boolean isInterested,int filePieceIndex) {
+	public static Message construct(int remotePeerId,int filePieceIndex) {
 		byte[] result = ByteBuffer.allocate(4).putInt(filePieceIndex).array();
 		System.out.println("sending interested byte field"+ByteBuffer.wrap(result).getInt());
-		if (isInterested)
-			return Message.actualMessageWrapper(remotePeerId, 2, result);
-		else 
-			return Message.actualMessageWrapper(remotePeerId, 3, result);
+		return Message.actualMessageWrapper(remotePeerId, 6, result);
 	}
 	
 	/**
@@ -33,7 +30,5 @@ public class RequestHandler {
 		//TODO this is just for testing
 		int payLoad = ByteBuffer.wrap(m.messagePayload).getInt();
 		System.out.println("Receive a test request message from peer " + m.remotePeerId + ", whose payload is " + payLoad);
-
-		
 	}
 }
