@@ -21,7 +21,7 @@ public class ControlSystem {
 	protected static int preferredNeighborsCount; //The number of preferred neighbors.
 	private static int unchokingInterval; //The interval of switching unchocking neighbors.
 	private static int optUnchokingInterval; //The interval of switching optimistic unchocking neighbors.
-	static String fileName; //The name of the file to be distributed.
+	private static String fileName; //The name of the file to be distributed.
 	static int fileSize; //The size of the file in bytes.
 	static int pieceSize; //The size of the piece in bytes.
 	

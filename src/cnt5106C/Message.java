@@ -112,7 +112,7 @@ public class Message {
 					//TODO request message
 					break;
 				case 7:
-					FilePieceHandler.handle(this);
+					//TODO piece message
 					break;
 				case 8: 
 					System.out.println(new String(messagePayload));
