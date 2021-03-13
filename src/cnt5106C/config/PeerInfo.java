@@ -25,14 +25,13 @@ public class PeerInfo {
 
 				String[] tokens = line.split(" ");
 				peers.add(new DynamicPeerInfo(
-					Integer.parseInt(tokens[0].trim()),
-					tokens[1].trim(),
-					Integer.parseInt(tokens[2].trim()),
-					tokens[3].trim().equals("1"),
-					numOfPieces,
-					index,
-					true,
-					false));
+				Integer.parseInt(tokens[0].trim()),
+				tokens[1].trim(),
+				Integer.parseInt(tokens[2].trim()),
+				tokens[3].trim().equals("1"),
+				numOfPieces,
+				index));
+				
 				index++;
 			}
 		} catch (IOException e) {
