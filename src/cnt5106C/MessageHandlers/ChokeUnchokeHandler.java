@@ -45,7 +45,7 @@ public class ChokeUnchokeHandler {
 			DynamicPeerInfo p = PeerProcess.peers.get(m.remotePeerIndex);
 			// List tmp = new ArrayList<int>(0);
 			for(int i=0; i< PeerProcess.numOfPieces;i++){
-				if(!p.getFilePieces(i)){
+				if(!p.getFilePieceState(i)){
 					System.out.println("REQUESTING peer " + m.remotePeerId+" for piece #"+i);
 					PeerProcess.messageQueues.get(m.remotePeerIndex).add(RequestHandler.construct(m.remotePeerId,i));
 				}
