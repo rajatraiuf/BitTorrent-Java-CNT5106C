@@ -33,6 +33,8 @@ public class PeerProcess {
 	
 	public static int interestedPeerNumber = 0;
 	
+	public static FileHelper fileHelper;
+	
 
 	/**
 	 * Read common.cfg and PeerInfo.cfg into some data structures.
@@ -81,6 +83,8 @@ public class PeerProcess {
 		
 		DecisionMaker dm = new DecisionMaker();//The real controller, an individual thread to manage everything
 		dm.start();
+		
+		fileHelper = new FileHelper();
 		
 		//We need to create sockets towards all the hosts before our index.
 		for(int i = 0; i < index; i++) {
