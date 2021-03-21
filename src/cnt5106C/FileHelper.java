@@ -36,6 +36,7 @@ public class FileHelper {
 				fw.write((byte)0);	
 			}
 			fw.close();
+			rf = new RandomAccessFile(path, "rw");
 		}
 	}
 	
@@ -52,7 +53,8 @@ public class FileHelper {
 	
 	public void writeFilePieceInByteArray(int index, byte[] bytes) throws IOException {
 		synchronized(lock) {
-			rf.seek(index*pieceSize);
+			System.out.println("try to write file index " + index);
+			rf.seek(index * pieceSize);
 			for(int i = 0; i < pieceSize; i++) {
 				rf.writeByte(bytes[i]);
 			}

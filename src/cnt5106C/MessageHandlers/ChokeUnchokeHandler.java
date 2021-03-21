@@ -44,11 +44,11 @@ public class ChokeUnchokeHandler {
 			// Send request if needed
 			PeerProcess.peers.get(m.remotePeerIndex).isChockedByIt = false;
 			DynamicPeerInfo p = PeerProcess.peers.get(m.remotePeerIndex);
-			// List tmp = new ArrayList<int>(0);
 			ArrayList<Integer> interestedList = p.getInterestedList();
-			int requestIndex = interestedList.get((int)Math.random()*interestedList.size());
+			System.out.println("Interested list of " + m.remotePeerId + " : " + interestedList);
+			int requestIndex = interestedList.get((int)(Math.random() * interestedList.size()));
 			System.out.println("REQUESTING peer " + m.remotePeerId+" for piece #" + requestIndex);
-			PeerProcess.messageQueues.get(m.remotePeerIndex).add(RequestHandler.construct(m.remotePeerId,requestIndex));
+			PeerProcess.messageQueues.get(m.remotePeerIndex).add(RequestHandler.construct(m.remotePeerId, requestIndex));
 		}
 	}
 }

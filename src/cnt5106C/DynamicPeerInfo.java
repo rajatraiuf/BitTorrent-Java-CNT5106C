@@ -22,7 +22,7 @@ public class DynamicPeerInfo {
 	public ArrayList<Boolean> filePieces; //A BitSet that keep track of whether a peer has any piece or not. 
 							  //If the bit at n is 1, then this peer has piece n right now. Do not access it directly
 	public ArrayList<Integer> interestedFilePieces;//The filePieces remote peer has and local peer don't. never access it directly, although its public
-	private static final Object lock = new Object();
+	private Object lock = new Object();
 	
 	/**
 	 * The constructor of PeerInfo data structure.
@@ -61,7 +61,8 @@ public class DynamicPeerInfo {
 	
 	public void setFilePieceState(int index, boolean value) {
 		synchronized(lock){
-			if(PeerProcess.index == index) {
+			if(PeerProcess.index == this.index) {
+				System.out.print("setting local file piece " + index);
 				//setting local peer
 				filePieces.set(index, value);
 				//We never loss a local file piece after we have it, so value must be true
@@ -70,6 +71,7 @@ public class DynamicPeerInfo {
 						//If it is a remote peer
 						for(Integer i: p.interestedFilePieces) {
 							if(i == index) {
+								System.out.println("removing interest " + i);
 								//Since we have the file piece right now, it is not interested any more
 								p.interestedFilePieces.remove(i);
 								break;
@@ -112,7 +114,7 @@ public class DynamicPeerInfo {
 	public ArrayList<Integer> getInterestedList() {
 		ArrayList<Integer> temp;
 		synchronized(lock) {
-			temp = (ArrayList<Integer>) interestedFilePieces.clone();
+			temp = (ArrayList<Integer>) interestedFilePieces;
 		}
 		return temp;
 	}

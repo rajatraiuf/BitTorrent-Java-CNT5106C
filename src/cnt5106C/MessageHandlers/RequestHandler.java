@@ -29,6 +29,9 @@ public class RequestHandler {
 	public static void handle(Message m) throws Exception {
 		//TODO this is just for testing
 		int payLoad = ByteBuffer.wrap(m.messagePayload).getInt();
+		if(!PeerProcess.peers.get(m.remotePeerIndex).isChokeingIt) {
+			PeerProcess.messageQueues.get(m.remotePeerIndex).put(FilePieceHandler.construct(m.remotePeerId, payLoad));
+		}
 		System.out.println("Receive a test request message from peer " + m.remotePeerId + ", whose payload is " + payLoad);
 	}
 }

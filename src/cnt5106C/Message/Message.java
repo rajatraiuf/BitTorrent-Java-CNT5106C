@@ -109,6 +109,7 @@ public class Message {
 					break;
 				case 4:
 					//TODO have message
+					HaveHandler.handle(this);
 					break;
 				case 5:
 					//bitfield message
@@ -120,6 +121,7 @@ public class Message {
 					break;
 				case 7:
 					//TODO piece message
+					FilePieceHandler.handle(this);
 					break;
 				case 8: 
 					System.out.println(new String(messagePayload));
