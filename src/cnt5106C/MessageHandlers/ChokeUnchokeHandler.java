@@ -21,11 +21,11 @@ public class ChokeUnchokeHandler {
 	public static Message construct(int remotePeerId, boolean isChoke) {
 		if (isChoke){
 			System.out.println("Sending choke byte field "+remotePeerId);
-			return Message.actualMessageWrapper(remotePeerId, 2 , new byte[0]);
+			return Message.actualMessageWrapper(remotePeerId, 0 , new byte[0]);
 		}
 		else {
 			System.out.println("Sending unchoke byte field "+remotePeerId);
-			return Message.actualMessageWrapper(remotePeerId, 3 , new byte[0]);
+			return Message.actualMessageWrapper(remotePeerId, 1 , new byte[0]);
 		}
 	}
 	
@@ -37,11 +37,12 @@ public class ChokeUnchokeHandler {
 		//TODO this is just for testing
 		if(isChoke){
 			System.out.println("Received a choke message from peer " + m.remotePeerId);
-			PeerProcess.peers.get(m.remotePeerIndex).isChoked=true;
+			PeerProcess.peers.get(m.remotePeerIndex).isChockedByIt=true;
 		}
 		else{
 			System.out.println("RECEIVED a unchoke message from peer " + m.remotePeerId);
 			// Send request if needed
+			PeerProcess.peers.get(m.remotePeerIndex).isChockedByIt = false;
 			DynamicPeerInfo p = PeerProcess.peers.get(m.remotePeerIndex);
 			// List tmp = new ArrayList<int>(0);
 			ArrayList<Integer> interestedList = p.getInterestedList();

@@ -11,7 +11,8 @@ import java.util.ArrayList;
 public class DynamicPeerInfo {
 	public int index;//Index of the remote peer. Follow the order in peerInfo.cfg
 	public boolean isConnected;//If the local host already established a TCP connection to remote host
-	public boolean isChoked;//If the remote peer is chocked or not
+	public boolean isChokeingIt;//If the remote peer is chocked or not
+	public boolean isChockedByIt;
 	public boolean isInterested;//If the remote peer is interested or not
 	public int peerId; //The id of the remote peer, for example, 1001
 	public String address; //The domain name address of the peer, for example, lin114-00.cise.ufl.edu
@@ -32,12 +33,13 @@ public class DynamicPeerInfo {
 	 * @param numOfPieces How many pieces in the file.
 	 * @param index index of the remote host
 	 */
-	public DynamicPeerInfo(int peerId, String address, int port, boolean hasFileInitially, int numOfPieces, int index, boolean isChoked, boolean isInterested) {
+	public DynamicPeerInfo(int peerId, String address, int port, boolean hasFileInitially, int numOfPieces, int index) {
 		this.isConnected = false;
 		this.peerId = peerId;
 		this.address = address;
-		this.isChoked = isChoked;
-		this.isInterested = isInterested;
+		this.isChokeingIt = true;
+		this.isChockedByIt = true;
+		this.isInterested = false;
 		try {
 			ipAddress = InetAddress.getByName(address);//Get the real ip address from host name.
 		}catch(UnknownHostException e) {

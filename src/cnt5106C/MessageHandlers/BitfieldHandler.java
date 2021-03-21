@@ -59,13 +59,15 @@ public class BitfieldHandler {
 			for(int j = 0; j < 8; j++) {//For each bit in a byte
 				int indexOfPiece = i * 8 + j;
 				//we create a mask like 00x00000 and do "and operation" to that received byte
-				boolean hasFile = (payLoad[i] & (1 << (7 - j))) != 0;
-				if(hasFile) {
-					PeerProcess.peers.get(m.remotePeerIndex).setFilePieceState(indexOfPiece, true);
-					//if (!PeerProcess.peers.get(PeerProcess.index).getFilePieceState(indexOfPiece)) // If peer does not have a file piece then send an interested message to the neighbor 
-						//ifInterested = true;
-				}else {
-					PeerProcess.peers.get(m.remotePeerIndex).setFilePieceState(indexOfPiece, false);
+				if(indexOfPiece < numOfPieces) {
+					boolean hasFile = (payLoad[i] & (1 << (7 - j))) != 0;
+					if(hasFile) {
+						PeerProcess.peers.get(m.remotePeerIndex).setFilePieceState(indexOfPiece, true);
+						//if (!PeerProcess.peers.get(PeerProcess.index).getFilePieceState(indexOfPiece)) // If peer does not have a file piece then send an interested message to the neighbor 
+							//ifInterested = true;
+					}else {
+						PeerProcess.peers.get(m.remotePeerIndex).setFilePieceState(indexOfPiece, false);
+					}
 				}
 			}
 		}

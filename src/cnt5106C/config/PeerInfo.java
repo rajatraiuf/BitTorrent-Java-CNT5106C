@@ -30,9 +30,7 @@ public class PeerInfo {
 					Integer.parseInt(tokens[2].trim()),
 					tokens[3].trim().equals("1"),
 					numOfPieces,
-					index,
-					true,
-					false));
+					index));
 				index++;
 			}
 		} catch (IOException e) {

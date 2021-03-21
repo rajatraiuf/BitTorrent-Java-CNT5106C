@@ -31,6 +31,8 @@ public class PeerProcess {
 	protected static int unchokingInterval; //The interval of switching unchocking neighbors.
 	protected static int optUnchokingInterval; //The interval of switching optimistic unchocking neighbors.
 	
+	public static int interestedPeerNumber = 0;
+	
 
 	/**
 	 * Read common.cfg and PeerInfo.cfg into some data structures.
