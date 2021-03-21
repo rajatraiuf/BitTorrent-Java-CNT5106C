@@ -18,9 +18,10 @@ public class DynamicPeerInfo {
 	public InetAddress ipAddress; //The ip address of this peer.
 	public int port; //The port of the peer, for example, 6001
 	public boolean hasFileInitially; //If the peer has the file initially, this suppose to be true.
-	private ArrayList<Boolean> filePieces; //A BitSet that keep track of whether a peer has any piece or not. 
-							  //If the bit at n is 1, then this peer has piece n right now.
-	private final Object lock;//For thread safe
+	public ArrayList<Boolean> filePieces; //A BitSet that keep track of whether a peer has any piece or not. 
+							  //If the bit at n is 1, then this peer has piece n right now. Do not access it directly
+	public ArrayList<Integer> interestedFilePieces;//The filePieces remote peer has and local peer don't. never access it directly, although its public
+	private static final Object lock = new Object();
 	
 	/**
 	 * The constructor of PeerInfo data structure.
@@ -32,7 +33,6 @@ public class DynamicPeerInfo {
 	 * @param index index of the remote host
 	 */
 	public DynamicPeerInfo(int peerId, String address, int port, boolean hasFileInitially, int numOfPieces, int index, boolean isChoked, boolean isInterested) {
-		this.lock = new Object();
 		this.isConnected = false;
 		this.peerId = peerId;
 		this.address = address;
@@ -54,11 +54,35 @@ public class DynamicPeerInfo {
 				filePieces.add(false);
 			}
 		}
+		interestedFilePieces = new ArrayList<Integer>();
 	}
 	
 	public void setFilePieceState(int index, boolean value) {
 		synchronized(lock){
-			filePieces.set(index, value);
+			if(PeerProcess.index == index) {
+				//setting local peer
+				filePieces.set(index, value);
+				//We never loss a local file piece after we have it, so value must be true
+				for(DynamicPeerInfo p: PeerProcess.peers) {
+					if(p.index != PeerProcess.index) {
+						//If it is a remote peer
+						for(Integer i: p.interestedFilePieces) {
+							if(i == index) {
+								//Since we have the file piece right now, it is not interested any more
+								p.interestedFilePieces.remove(i);
+								break;
+							}
+						}
+					}
+				}
+			}else {
+				//setting remote peer
+				filePieces.set(index, value);
+				if(value == true && PeerProcess.peers.get(PeerProcess.index).filePieces.get(index) == false) {
+					//They have it, we don't, so we are interested in it
+					interestedFilePieces.add(Integer.valueOf(index));
+				}
+			}
 		}
 	}
 	
@@ -78,6 +102,23 @@ public class DynamicPeerInfo {
 					result = false;
 				}
 			}
+		}
+		return result;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public ArrayList<Integer> getInterestedList() {
+		ArrayList<Integer> temp;
+		synchronized(lock) {
+			temp = (ArrayList<Integer>) interestedFilePieces.clone();
+		}
+		return temp;
+	}
+	
+	public boolean isThereAnyInterestedFilePieces() {
+		boolean result;
+		synchronized(lock) {
+			result = !interestedFilePieces.isEmpty();
 		}
 		return result;
 	}

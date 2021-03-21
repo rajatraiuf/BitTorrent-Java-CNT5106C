@@ -37,19 +37,17 @@ public class ChokeUnchokeHandler {
 		//TODO this is just for testing
 		if(isChoke){
 			System.out.println("Received a choke message from peer " + m.remotePeerId);
-			// PeerProcess.peers.get(m.remotePeerIndex).isChoked=true;
+			PeerProcess.peers.get(m.remotePeerIndex).isChoked=true;
 		}
 		else{
 			System.out.println("RECEIVED a unchoke message from peer " + m.remotePeerId);
 			// Send request if needed
 			DynamicPeerInfo p = PeerProcess.peers.get(m.remotePeerIndex);
 			// List tmp = new ArrayList<int>(0);
-			for(int i=0; i< PeerProcess.numOfPieces;i++){
-				if(!p.getFilePieceState(i)){
-					System.out.println("REQUESTING peer " + m.remotePeerId+" for piece #"+i);
-					PeerProcess.messageQueues.get(m.remotePeerIndex).add(RequestHandler.construct(m.remotePeerId,i));
-				}
-			}
+			ArrayList<Integer> interestedList = p.getInterestedList();
+			int requestIndex = interestedList.get((int)Math.random()*interestedList.size());
+			System.out.println("REQUESTING peer " + m.remotePeerId+" for piece #" + requestIndex);
+			PeerProcess.messageQueues.get(m.remotePeerIndex).add(RequestHandler.construct(m.remotePeerId,requestIndex));
 		}
 	}
 }

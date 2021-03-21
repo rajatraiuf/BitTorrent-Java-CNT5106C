@@ -54,7 +54,7 @@ public class BitfieldHandler {
 		int numOfPieces = PeerProcess.fileSize/PeerProcess.pieceSize;
 		int numOfZeros = (8 - (numOfPieces % 8)) % 8;//Number of zero we need to add in the end
 		int numOfPayloadBytes = (numOfPieces + numOfZeros) / 8;
-		boolean ifInterested = false;
+		//boolean ifInterested = false;
 		for(int i = 0; i < numOfPayloadBytes; i++) {//For each byte in payload
 			for(int j = 0; j < 8; j++) {//For each bit in a byte
 				int indexOfPiece = i * 8 + j;
@@ -62,8 +62,8 @@ public class BitfieldHandler {
 				boolean hasFile = (payLoad[i] & (1 << (7 - j))) != 0;
 				if(hasFile) {
 					PeerProcess.peers.get(m.remotePeerIndex).setFilePieceState(indexOfPiece, true);
-					if (!PeerProcess.peers.get(PeerProcess.index).getFilePieceState(indexOfPiece)) // If peer does not have a file piece then send an interested message to the neighbor 
-						ifInterested = true;
+					//if (!PeerProcess.peers.get(PeerProcess.index).getFilePieceState(indexOfPiece)) // If peer does not have a file piece then send an interested message to the neighbor 
+						//ifInterested = true;
 				}else {
 					PeerProcess.peers.get(m.remotePeerIndex).setFilePieceState(indexOfPiece, false);
 				}
@@ -71,6 +71,6 @@ public class BitfieldHandler {
 		}
 		//TODO create a interest/not interest message and send it
 		System.out.println("Receive a test bitfield message from peer " + m.remotePeerId + ", whose payload is " + Arrays.toString(payLoad));
-		PeerProcess.messageQueues.get(m.remotePeerIndex).add(InterestHandler.construct(m.remotePeerId, ifInterested));
+		PeerProcess.messageQueues.get(m.remotePeerIndex).add(InterestHandler.construct(m.remotePeerId, PeerProcess.peers.get(m.remotePeerIndex).isThereAnyInterestedFilePieces()));
 	}
 }
