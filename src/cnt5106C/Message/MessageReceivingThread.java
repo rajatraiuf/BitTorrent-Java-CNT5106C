@@ -7,8 +7,7 @@ package cnt5106C.Message;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import cnt5106C.*;
 
@@ -16,9 +15,9 @@ public class MessageReceivingThread extends Thread{
 	private Socket socket; //The socket connected to the remote host.
 	private int remotePeerIndex; //Index of the specific remote host to communicate;
 	private int localIndex; //Index of the local host.
-	private ArrayList<DynamicPeerInfo> peers; //The peerInfo of the remote hosts.
+	private List<DynamicPeerInfo> peers; //The peerInfo of the remote hosts.
 	private ObjectInputStream input; //The input stream of the socket.
-	private ArrayList<LinkedBlockingQueue<Message>> queues;//The message queue for thread communication.
+	private List<LinkedBlockingQueue<Message>> queues;//The message queue for thread communication.
 	
 	/**
 	 * The constructor of the thread.
@@ -42,7 +41,7 @@ public class MessageReceivingThread extends Thread{
 	 *Run the thread.
 	 */
 	public void run() {
-		System.out.println("MessageReceivingThread start to work.");
+		System.out.println("Message Receiving Thread start to work.");
 		while(true) {
 			try {
 				byte[] msg = (byte[]) input.readObject();

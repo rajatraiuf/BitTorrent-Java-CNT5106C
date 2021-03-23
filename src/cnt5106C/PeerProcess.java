@@ -5,6 +5,7 @@
 package cnt5106C;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import cnt5106C.config.Config;
@@ -18,14 +19,14 @@ import java.net.*;
 public class PeerProcess {
 	public static int peerId; //The peerId of this process, reading from console.
 	public static int index; //The index of this process, counting from up to down in peerInfo.cfg
-	public static ArrayList<DynamicPeerInfo> peers; //An array that saves all peerInfos.
+	public static List<DynamicPeerInfo> peers; //An array that saves all peerInfos.
 	public static String fileName; //The name of the file to be distributed.
 	public static int fileSize; //The size of the file in bytes.
 	public static int pieceSize; //The size of the piece in bytes.
 	public static int numOfPieces; //The # of the pieces
 
 	//An array of queues for all the threads to send message to each other.
-	public static ArrayList<LinkedBlockingQueue<Message>> messageQueues = new ArrayList<LinkedBlockingQueue<Message>>();
+	public static List<LinkedBlockingQueue<Message>> messageQueues = new ArrayList<>();
 	
 	protected static int preferredNeighborsCount; //The number of preferred neighbors.
 	protected static int unchokingInterval; //The interval of switching unchocking neighbors.
@@ -76,7 +77,7 @@ public class PeerProcess {
 	 * @throws IOException When serverSocket doesn't work well.
 	 */
 	public static void main(String[] args) throws IOException {
-		System.out.println("Mainthread begins to work.");
+		System.out.println("Main thread begins to work.");
 		peerId = Integer.parseInt(args[0]); //Read PeerId from console arguments.
 		readConfigFiles();
 		index = getIndex(peerId); //Find the index of this process.
@@ -90,7 +91,7 @@ public class PeerProcess {
 		for(int i = 0; i < index; i++) {
 			try {
 				//We need to create the socket towards remote port.
-				System.out.println("Positively creating a socket to " + peers.get(i).address + " " + peers.get(i).port);
+				System.out.println("Creating a socket to " + peers.get(i).address + " " + peers.get(i).port);
 				Socket beforeSocket = new Socket(peers.get(i).address, peers.get(i).port);
 				messageQueues.add(new LinkedBlockingQueue<Message>());//New message Queue for new thread.
 				//Create the upstream handler.

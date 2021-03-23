@@ -1,6 +1,5 @@
 package cnt5106C;
 
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -53,7 +52,7 @@ public class FileHelper {
 	
 	public void writeFilePieceInByteArray(int index, byte[] bytes) throws IOException {
 		synchronized(lock) {
-			System.out.println("try to write file index " + index);
+			// System.out.println("try to write file index " + index);
 			rf.seek(index * pieceSize);
 			for(int i = 0; i < pieceSize; i++) {
 				rf.writeByte(bytes[i]);

@@ -23,8 +23,10 @@ public class FilePieceHandler {
 		byte[] realFile = Arrays.copyOfRange(m.messagePayload, 4, 4 + PeerProcess.pieceSize);
 		int fileIndex = ByteBuffer.wrap(fileIndexInByte).getInt();
 		PeerProcess.fileHelper.writeFilePieceInByteArray(fileIndex, realFile);
-		PeerProcess.peers.get(PeerProcess.index).setFilePieceState(fileIndex, true);
-		
+		DynamicPeerInfo sender = PeerProcess.peers.get(PeerProcess.index);
+		sender.setFilePieceState(fileIndex, true);
+		sender.incrementChunkCounter();
+
 		for(DynamicPeerInfo p: PeerProcess.peers) {
 			if(p.isConnected) {
 				PeerProcess.messageQueues.get(p.index).put(HaveHandler.construct(p.peerId, fileIndex));
@@ -36,11 +38,10 @@ public class FilePieceHandler {
 		
 		DynamicPeerInfo rp = PeerProcess.peers.get(m.remotePeerIndex);
 		ArrayList<Integer> interestedList = rp.getInterestedList();
-		System.out.println("Interested list of " + m.remotePeerId + " : " + interestedList);
+		// System.out.println("Interested list of " + m.remotePeerId + " : " + interestedList);
 		if(!interestedList.isEmpty()) {
 			int requestIndex = interestedList.get((int)(Math.random() * interestedList.size()));
 			PeerProcess.messageQueues.get(m.remotePeerIndex).put(RequestHandler.construct(m.remotePeerId, requestIndex));
 		}
-
 	}
 }

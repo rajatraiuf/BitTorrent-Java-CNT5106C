@@ -4,15 +4,14 @@
 
 package cnt5106C;
 
-import java.time.LocalTime;
 import java.util.*;
 
 import cnt5106C.Message.*;
 import cnt5106C.MessageHandlers.ChokeUnchokeHandler;
 
 public class DecisionMaker extends Thread{
-	public Set<Integer> preferredPeers = Collections.synchronizedSet(new HashSet<Integer>()); //An array that maintains preferred peerInfos.
-	public int optUnchokedPeer = -1;
+	private Set<Integer> preferredPeers = Collections.synchronizedSet(new HashSet<Integer>()); //An array that maintains preferred peerInfos.
+	private int optUnchokedPeer = -1;
 	/**
 	 * Update preferred peers
 	 */
@@ -22,39 +21,39 @@ public class DecisionMaker extends Thread{
 		{ 
 			synchronized(preferredPeers){
 				if (PeerProcess.peers.size()>0)
-				{
 						preferredPeers.clear();
-				}
+
+				Collections.sort(PeerProcess.peers, new DynamicComparator());
+				var i=0;
 				while(preferredPeers.size() < Math.min(
 						PeerProcess.preferredNeighborsCount, 
-						PeerProcess.interestedPeerNumber - ((optUnchokedPeer == -1) ? 0 : 1))){
-					int index = (int)(Math.random() * PeerProcess.peers.size()); 
-					// System.out.println("Picking random peer at index"+String.valueOf(index));
-					if(
-							index != PeerProcess.index 
-							&& !preferredPeers.contains(index) 
-							&& PeerProcess.peers.get(index).isInterested
-							&& optUnchokedPeer != index)
-						preferredPeers.add(index);
-				}
+						PeerProcess.interestedPeerNumber - ((optUnchokedPeer == -1) ? 0 : 1))
+						&& i<PeerProcess.peers.size()){
+							if (i!=PeerProcess.index){
+								DynamicPeerInfo p = PeerProcess.peers.get(i);
+								System.out.println("Choosing preferred peer "+p.peerId+" with received chunk count : "+p.chunkCount);
+								preferredPeers.add(p.index);
+								p.chunkCount=0;
+							}
+							i++;
+						}
+
 				//iterate over all peers to check and send proper choke/unchoke msgs
 				for(DynamicPeerInfo p :PeerProcess.peers) {
 					if(p.isConnected ) {
-						if(preferredPeers.contains(p.index)){
-							if (p.isChokeingIt){
-								System.out.println("Unchoking [choked] random peer at index"+p.peerId);
-								PeerProcess.messageQueues.get(p.index).add(ChokeUnchokeHandler.construct(p.peerId , false));
-								p.isChokeingIt = false;
-							}
+						if(preferredPeers.contains(p.index) && p.isChoked){
+							System.out.println("Unchoking peer "+p.peerId);
+							PeerProcess.messageQueues.get(p.index).add(ChokeUnchokeHandler.construct(p.peerId , false));
+							p.isChoked = false;
 						}
-						else if(!p.isChokeingIt && optUnchokedPeer != p.index){
-							System.out.println("Choking [unchoked] random peer at index"+p.peerId);
+						else if(!p.isChoked && optUnchokedPeer != p.index){
+							System.out.println("Choking peer "+p.peerId);
 							PeerProcess.messageQueues.get(p.index).add(ChokeUnchokeHandler.construct(p.peerId , true));
-							p.isChokeingIt = true;
+							p.isChoked = true;
 						}
 					}
 				}
-				System.out.println("Updated " +String.valueOf(PeerProcess.peerId) +" preferred peers to :"+ preferredPeers + " and " + optUnchokedPeer);
+				System.out.println("Updated " +String.valueOf(PeerProcess.peerId) +" preferred peers to "+ preferredPeers + " and optimisticPeerIndex is " + optUnchokedPeer);
 			}
 		} 
 		
@@ -78,15 +77,15 @@ public class DecisionMaker extends Thread{
 							int oldopt = optUnchokedPeer;
 							optUnchokedPeer = index;
 							DynamicPeerInfo optpeer= PeerProcess.peers.get(index);
-							if(optpeer.isChokeingIt){
+							if(optpeer.isChoked){
 								PeerProcess.messageQueues.get(index).add(ChokeUnchokeHandler.construct(optpeer.peerId, false));
-								optpeer.isChokeingIt=false;
+								optpeer.isChoked=false;
 							}
-							if(oldopt != -1 && oldopt != index && !PeerProcess.peers.get(oldopt).isChokeingIt) {
+							if(oldopt != -1 && oldopt != index && !PeerProcess.peers.get(oldopt).isChoked) {
 								PeerProcess.messageQueues.get(index).add(ChokeUnchokeHandler.construct(PeerProcess.peers.get(oldopt).peerId, true));
-								PeerProcess.peers.get(oldopt).isChokeingIt=true;
+								PeerProcess.peers.get(oldopt).isChoked=true;
 							}
-							System.out.println("Optimistic Updated " +PeerProcess.peerId +" preferred peers from " + oldopt + " to :"+ optUnchokedPeer);
+							System.out.println("Optimisticslly updated " +PeerProcess.peerId +" preferred peers from " + oldopt + " to :"+ optUnchokedPeer);
 							flag = false;
 						}
 					}
@@ -99,7 +98,7 @@ public class DecisionMaker extends Thread{
 	/**
 	 *Main method of decision maker as a thread.
 	 */
-	
+	@Override
 	public void run() {
 		Timer timerUpdate = new Timer();//create a new Timer
 		Timer timerOptUpdate = new Timer();
@@ -110,14 +109,13 @@ public class DecisionMaker extends Thread{
 		while(true) {
 			/*
 			 * The code bellow is only for testing.
-			 * The decisionMaker is trying to send a "Hi" message to each connected peer every 5 seconds.
+			 * The decisionMaker is trying to send a "Hi" message to each connected peer every 10 seconds.
 			 */
 			try {
 				synchronized(preferredPeers) {
 					for(DynamicPeerInfo p: PeerProcess.peers) {
-						if(!p.isChockedByIt) {
-							// System.out.println("CONNECTED HERE");
-							String debugMsg = "Hi, i'm PP peer " + PeerProcess.peerId + "/" + PeerProcess.index + ", thank you for not choking me";
+						if(p.isConnected) {
+							String debugMsg = "Hi, I'm peer id " + PeerProcess.peerId + "/" + PeerProcess.index + ", Thank you for unchoking me.";
 							PeerProcess.messageQueues.get(p.index).put(
 								Message.actualMessageWrapper(p.index , 8,debugMsg.getBytes()));
 						}	
@@ -126,6 +124,7 @@ public class DecisionMaker extends Thread{
 				sleep(10000);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
+				Thread.currentThread().interrupt();
 			}
 		}
 	}

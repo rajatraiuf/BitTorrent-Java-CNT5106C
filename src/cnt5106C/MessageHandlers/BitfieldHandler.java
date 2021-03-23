@@ -38,7 +38,7 @@ public class BitfieldHandler {
 			messagePayload[i] = onePayload;
 		}
 		
-		System.out.println("peer " + PeerProcess.index + " send a bitfield message to " + remotePeerId + " with payload " + Arrays.toString(messagePayload));
+		System.out.println("Sending bit-field message to " + remotePeerId );
 		
 		return Message.actualMessageWrapper(remotePeerId, 5, messagePayload);
 	}
@@ -48,31 +48,23 @@ public class BitfieldHandler {
 	 * @param m the message to be handled
 	 */
 	public static void handle(Message m) throws Exception {
-		//TODO this is just for testing
 		byte[]payLoad = m.messagePayload;
 		
 		int numOfPieces = PeerProcess.fileSize/PeerProcess.pieceSize;
 		int numOfZeros = (8 - (numOfPieces % 8)) % 8;//Number of zero we need to add in the end
 		int numOfPayloadBytes = (numOfPieces + numOfZeros) / 8;
-		//boolean ifInterested = false;
 		for(int i = 0; i < numOfPayloadBytes; i++) {//For each byte in payload
 			for(int j = 0; j < 8; j++) {//For each bit in a byte
 				int indexOfPiece = i * 8 + j;
 				//we create a mask like 00x00000 and do "and operation" to that received byte
 				if(indexOfPiece < numOfPieces) {
 					boolean hasFile = (payLoad[i] & (1 << (7 - j))) != 0;
-					if(hasFile) {
-						PeerProcess.peers.get(m.remotePeerIndex).setFilePieceState(indexOfPiece, true);
-						//if (!PeerProcess.peers.get(PeerProcess.index).getFilePieceState(indexOfPiece)) // If peer does not have a file piece then send an interested message to the neighbor 
-							//ifInterested = true;
-					}else {
-						PeerProcess.peers.get(m.remotePeerIndex).setFilePieceState(indexOfPiece, false);
-					}
+					if(hasFile)
+						PeerProcess.peers.get(m.remotePeerIndex).setFilePieceState(indexOfPiece, hasFile);
 				}
 			}
 		}
-		//TODO create a interest/not interest message and send it
-		System.out.println("Receive a test bitfield message from peer " + m.remotePeerId + ", whose payload is " + Arrays.toString(payLoad));
+		System.out.println("Received bit-field message from peer " + m.remotePeerId);
 		PeerProcess.messageQueues.get(m.remotePeerIndex).add(InterestHandler.construct(m.remotePeerId, PeerProcess.peers.get(m.remotePeerIndex).isThereAnyInterestedFilePieces()));
 	}
 }

@@ -18,11 +18,11 @@ public class InterestHandler {
 	 */
 	public static Message construct(int remotePeerId, boolean isInterested) {
 		if (isInterested){
-			System.out.println("sending interested byte field"+remotePeerId);
+			System.out.println("Sending interested message to "+remotePeerId);
 			return Message.actualMessageWrapper(remotePeerId, 2 , new byte[0]);
 		}
 		else {
-			System.out.println("sending not interested byte field"+remotePeerId);
+			System.out.println("Sending not interested message to "+remotePeerId);
 			return Message.actualMessageWrapper(remotePeerId, 3 , new byte[0]);
 		}
 	}
@@ -34,18 +34,16 @@ public class InterestHandler {
 	public static void handle(Message m, boolean isInterested) throws Exception {
 		//TODO this is just for testing
 		if(isInterested){
-			System.out.println("Receive a interested message from peer " + m.remotePeerId);
 			if(!PeerProcess.peers.get(m.remotePeerIndex).isInterested) {
+				System.out.println("Receive a interested message from peer " + m.remotePeerId);
 				PeerProcess.peers.get(m.remotePeerIndex).isInterested = true;
 				PeerProcess.interestedPeerNumber += 1;
 			}
 		}
-		else {
+		else if(PeerProcess.peers.get(m.remotePeerIndex).isInterested) {
 			System.out.println("Receive a not interested message from peer " + m.remotePeerId);
-			if(PeerProcess.peers.get(m.remotePeerIndex).isInterested) {
-				PeerProcess.peers.get(m.remotePeerIndex).isInterested = false;
-				PeerProcess.interestedPeerNumber -= 1;
-			}
+			PeerProcess.peers.get(m.remotePeerIndex).isInterested = false;
+			PeerProcess.interestedPeerNumber -= 1;
 		}
 	}
 }

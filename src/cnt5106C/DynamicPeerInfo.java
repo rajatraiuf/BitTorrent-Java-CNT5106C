@@ -7,21 +7,31 @@ package cnt5106C;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+class DynamicComparator implements Comparator<DynamicPeerInfo> {
+
+    @Override
+    public int compare(DynamicPeerInfo o1, DynamicPeerInfo o2) {
+		return  o1.chunkCount>o2.chunkCount?0:1;
+    }
+}
 
 public class DynamicPeerInfo {
 	public int index;//Index of the remote peer. Follow the order in peerInfo.cfg
 	public boolean isConnected;//If the local host already established a TCP connection to remote host
-	public boolean isChokeingIt;//If the remote peer is chocked or not
-	public boolean isChockedByIt;
+	public boolean isChoked;//If the remote peer is chocked or not
 	public boolean isInterested;//If the remote peer is interested or not
 	public int peerId; //The id of the remote peer, for example, 1001
 	public String address; //The domain name address of the peer, for example, lin114-00.cise.ufl.edu
 	public InetAddress ipAddress; //The ip address of this peer.
 	public int port; //The port of the peer, for example, 6001
 	public boolean hasFileInitially; //If the peer has the file initially, this suppose to be true.
-	public ArrayList<Boolean> filePieces; //A BitSet that keep track of whether a peer has any piece or not. 
+	public List<Boolean> filePieces; //A BitSet that keep track of whether a peer has any piece or not. 
 							  //If the bit at n is 1, then this peer has piece n right now. Do not access it directly
-	public ArrayList<Integer> interestedFilePieces;//The filePieces remote peer has and local peer don't. never access it directly, although its public
+	public List<Integer> interestedFilePieces;//The filePieces remote peer has and local peer don't. never access it directly, although its public
+	public int chunkCount = 0;
 	private Object lock = new Object();
 	
 	/**
@@ -37,8 +47,7 @@ public class DynamicPeerInfo {
 		this.isConnected = false;
 		this.peerId = peerId;
 		this.address = address;
-		this.isChokeingIt = true;
-		this.isChockedByIt = true;
+		this.isChoked = true;
 		this.isInterested = false;
 		try {
 			ipAddress = InetAddress.getByName(address);//Get the real ip address from host name.
@@ -48,7 +57,7 @@ public class DynamicPeerInfo {
 		this.port = port;
 		this.index = index;
 		this.hasFileInitially = hasFileInitially;
-		filePieces = new ArrayList<Boolean>();
+		filePieces = new ArrayList<>();
 		for(int i = 0; i < numOfPieces; i++) {
 			if(hasFileInitially) {
 				filePieces.add(true);
@@ -58,11 +67,17 @@ public class DynamicPeerInfo {
 		}
 		interestedFilePieces = new ArrayList<Integer>();
 	}
+
+	public void incrementChunkCounter() {
+		synchronized(lock){
+			chunkCount++;
+		}
+	}			
 	
 	public void setFilePieceState(int index, boolean value) {
 		synchronized(lock){
 			if(PeerProcess.index == this.index) {
-				System.out.print("setting local file piece " + index);
+				// System.out.print("setting local file piece " + index);
 				//setting local peer
 				filePieces.set(index, value);
 				//We never loss a local file piece after we have it, so value must be true
@@ -71,7 +86,7 @@ public class DynamicPeerInfo {
 						//If it is a remote peer
 						for(Integer i: p.interestedFilePieces) {
 							if(i == index) {
-								System.out.println("removing interest " + i);
+								// System.out.println("removing interest " + i);
 								//Since we have the file piece right now, it is not interested any more
 								p.interestedFilePieces.remove(i);
 								break;

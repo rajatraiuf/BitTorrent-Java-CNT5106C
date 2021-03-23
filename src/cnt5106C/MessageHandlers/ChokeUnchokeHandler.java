@@ -6,9 +6,6 @@ package cnt5106C.MessageHandlers;
 
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.nio.ByteBuffer;
 import cnt5106C.*;
 import cnt5106C.Message.*;
 
@@ -30,25 +27,25 @@ public class ChokeUnchokeHandler {
 	}
 	
 	/**
-	 * Handle a interested/not interested message in a proper way.
+	 * Handle a choke/unchoke message in a proper way.
 	 * @param m the message to be handled
 	 */
 	public static void handle(Message m, boolean isChoke) throws Exception {
 		//TODO this is just for testing
 		if(isChoke){
 			System.out.println("Received a choke message from peer " + m.remotePeerId);
-			PeerProcess.peers.get(m.remotePeerIndex).isChockedByIt=true;
 		}
 		else{
 			System.out.println("RECEIVED a unchoke message from peer " + m.remotePeerId);
 			// Send request if needed
-			PeerProcess.peers.get(m.remotePeerIndex).isChockedByIt = false;
 			DynamicPeerInfo p = PeerProcess.peers.get(m.remotePeerIndex);
 			ArrayList<Integer> interestedList = p.getInterestedList();
-			System.out.println("Interested list of " + m.remotePeerId + " : " + interestedList);
-			int requestIndex = interestedList.get((int)(Math.random() * interestedList.size()));
-			System.out.println("REQUESTING peer " + m.remotePeerId+" for piece #" + requestIndex);
-			PeerProcess.messageQueues.get(m.remotePeerIndex).add(RequestHandler.construct(m.remotePeerId, requestIndex));
+			// System.out.println("Interested list of " + m.remotePeerId + " : " + interestedList);
+			if (interestedList.size()>0){
+				int requestIndex = interestedList.get((int)(Math.random() * interestedList.size()));
+				System.out.println("REQUESTING peer " + m.remotePeerId+" for piece #" + requestIndex);
+				PeerProcess.messageQueues.get(m.remotePeerIndex).add(RequestHandler.construct(m.remotePeerId, requestIndex));
+			}
 		}
 	}
 }

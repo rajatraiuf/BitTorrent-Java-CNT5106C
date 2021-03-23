@@ -5,9 +5,8 @@
 package cnt5106C.config;
 
 import java.io.*;
-import java.text.ParseException;
+import java.util.List;
 import java.util.ArrayList;
-import java.util.Vector;
 
 import cnt5106C.DynamicPeerInfo;
 import java.io.IOException;
@@ -33,8 +32,10 @@ public class PeerInfo {
 					index));
 				index++;
 			}
+			configFileReader.close();
 		} catch (IOException e) {
-			System.err.println("File not loaded");
+			System.err.println("Error loading peer info config file!");
+			System.exit(-1);
 		}
 		return peers;
 	}

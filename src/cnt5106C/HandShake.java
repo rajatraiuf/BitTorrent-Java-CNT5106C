@@ -39,24 +39,4 @@ public class HandShake implements java.io.Serializable {
         String handShakeMsg = getHeader() + "\n" + getZeroBits() + "\n" + getPeerID();
         return handShakeMsg;
     }
-    /*
-    public void SendHandShakeMsg(String msg) {
-        ObjectOutputStream out;
-        try{
-            out.writeObject(msg);
-            out.flush();
-        } catch(IOException ioException) {
-            ioException.printStackTrace();
-        }
-    }
-    public int ReceiveHandShake(ObjectInputStream in) throws IOException {
-        try {
-            HandShake msgIn = (String) in.readObject();
-            return msgIn;
-        } catch (ClassNotFoundException e) {
-            System.out.println(e);
-        }
-    }
-    */
-
 }

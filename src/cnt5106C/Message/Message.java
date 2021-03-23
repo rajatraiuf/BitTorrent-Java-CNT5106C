@@ -92,43 +92,35 @@ public class Message {
 				}
 				switch(messageType) {
 				case 0:
-					//TODO choke message
 					ChokeUnchokeHandler.handle(this,true);
 					break;
 				case 1:
-					//TODO unchoke message
 					ChokeUnchokeHandler.handle(this,false);
 					break;
 				case 2:
-					//TODO interested message
 					InterestHandler.handle(this,true);
 					break;
 				case 3:
-					//TODO not interested message
 					InterestHandler.handle(this,false);
 					break;
 				case 4:
-					//TODO have message
 					HaveHandler.handle(this);
 					break;
 				case 5:
-					//bitfield message
 					BitfieldHandler.handle(this);
 					break;
 				case 6:
-					//TODO request message
 					RequestHandler.handle(this);
 					break;
 				case 7:
-					//TODO piece message
 					FilePieceHandler.handle(this);
 					break;
 				case 8: 
-					System.out.println(new String(messagePayload));
+					System.out.println("DEBUG: "+new String(messagePayload));
 					break;
 				default:
 					//not a legal message
-					throw new Exception();
+					throw new IllegalArgumentException("Error: Invalid message type.");
 				}
 			}
 		}

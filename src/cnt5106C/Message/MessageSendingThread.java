@@ -7,8 +7,8 @@ package cnt5106C.Message;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import cnt5106C.*;
 
@@ -16,9 +16,9 @@ public class MessageSendingThread extends Thread{
 	private Socket socket; //The socket connected to the remote host.
 	private int remotePeerIndex; //Index of the specific remote host to communicate;
 	private int localIndex; //Index of the local host.
-	private ArrayList<DynamicPeerInfo> peers; //The peerInfo of the remote hosts.
+	private List<DynamicPeerInfo> peers; //The peerInfo of the remote hosts.
 	private ObjectOutputStream output;//The output stream of the socket.
-	private ArrayList<LinkedBlockingQueue<Message>> queues;//The message queue for thread communication.
+	private List<LinkedBlockingQueue<Message>> queues;//The message queue for thread communication.
 	
 	public void send(byte[] msg) {
 		try {

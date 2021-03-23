@@ -14,7 +14,7 @@ public class Config {
 	public static void init() {
 		cfg = new Properties();
         try {
-            InputStream in = new FileInputStream("Common.cfg");
+            InputStream in = new FileInputStream("CommonTest.cfg");
             cfg.load(in);
         }
         catch(Exception e){
