@@ -34,17 +34,22 @@ public class ChokeUnchokeHandler {
 		//TODO this is just for testing
 		if(isChoke){
 			PeerProcess.write("is choked by " + m.remotePeerId);
+			PeerProcess.peers.get(m.remotePeerIndex).isRemotePeerChockingLocalPeer = true;
 		}
 		else{
 			PeerProcess.write("is unchoked by " + m.remotePeerId);
+			PeerProcess.peers.get(m.remotePeerIndex).isRemotePeerChockingLocalPeer = false;
 			// Send request if needed
 			DynamicPeerInfo p = PeerProcess.peers.get(m.remotePeerIndex);
-			ArrayList<Integer> interestedList = p.getInterestedList();
-			// PeerProcess.write("Interested list of " + m.remotePeerId + " : " + interestedList);
-			if (interestedList.size()>0){
+			while(p.isThereAnyInterestedFilePieces()) {
+				ArrayList<Integer> interestedList = p.getInterestedList();
+				// PeerProcess.write("Interested list of " + m.remotePeerId + " : " + interestedList);
 				int requestIndex = interestedList.get((int)(Math.random() * interestedList.size()));
 				// PeerProcess.write("requesting peer " + m.remotePeerId+" for piece #" + requestIndex);
-				PeerProcess.messageQueues.get(m.remotePeerIndex).add(RequestHandler.construct(m.remotePeerId, requestIndex));
+				if(PeerProcess.dm.addRequest(requestIndex)) {
+					PeerProcess.messageQueues.get(m.remotePeerIndex).add(RequestHandler.construct(m.remotePeerId, requestIndex));
+					break;
+				}
 			}
 		}
 	}

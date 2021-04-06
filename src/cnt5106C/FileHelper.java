@@ -22,7 +22,7 @@ public class FileHelper {
 		numOfPieces = PeerProcess.numOfPieces;
 		hasFileInitially = PeerProcess.peers.get(localIndex).hasFileInitially;
 		fileName = PeerProcess.fileName;
-		path = "./Files/" + PeerProcess.peerId + "/" + fileName;
+		path = "./" + PeerProcess.peerId + "/" + fileName;
 		if(hasFileInitially) {
 			rf = new RandomAccessFile(path, "rw");
 		}else {

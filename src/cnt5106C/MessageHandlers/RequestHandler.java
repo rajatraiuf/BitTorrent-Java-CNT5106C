@@ -28,7 +28,7 @@ public class RequestHandler {
 	 */
 	public static void handle(Message m) throws Exception {
 		int payLoad = ByteBuffer.wrap(m.messagePayload).getInt();
-		if(!PeerProcess.peers.get(m.remotePeerIndex).isChoked) {
+		if(!PeerProcess.peers.get(m.remotePeerIndex).isLocalPeerChockingRemotePeer) {
 			PeerProcess.messageQueues.get(m.remotePeerIndex).put(FilePieceHandler.construct(m.remotePeerId, payLoad));
 		}
 		PeerProcess.write("Received a request message from peer " + m.remotePeerId + ", for piece index " + payLoad);

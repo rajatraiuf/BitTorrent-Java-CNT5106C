@@ -27,23 +27,34 @@ public class FilePieceHandler {
 		for (DynamicPeerInfo p : PeerProcess.peers) {
 			if (p.isConnected) {
 				PeerProcess.messageQueues.get(p.index).put(HaveHandler.construct(p.peerId, fileIndex));
-				if (!p.isThereAnyInterestedFilePieces()) {
+				if (!p.isThereAnyInterestedFilePieces() && p.isLocalPeerInterestedInRemotePeer) {
+					p.isLocalPeerInterestedInRemotePeer = false;
 					PeerProcess.messageQueues.get(p.index).put(InterestHandler.construct(p.peerId, false));
 				}
 			}
 		}
+		
+		PeerProcess.dm.removeRequest(fileIndex);
 
 		DynamicPeerInfo rp = PeerProcess.peers.get(m.remotePeerIndex);
 		rp.incrementChunkCounter();
-		ArrayList<Integer> interestedList = rp.getInterestedList();
-		// TODO: Tony, Please have a look
 		PeerProcess.write("has downloaded the piece " + fileIndex + " from " + m.remotePeerId
 				+ ". Now the number of pieces it has is "
-				+ selfPeer.totalFilePiecesWeReceived);
-		if (!interestedList.isEmpty()) {
-			int requestIndex = interestedList.get((int) (Math.random() * interestedList.size()));
-			PeerProcess.messageQueues.get(m.remotePeerIndex)
-					.put(RequestHandler.construct(m.remotePeerId, requestIndex));
+				+ selfPeer.getTotalFilePiecesWeReceived());
+		
+		while(rp.isThereAnyInterestedFilePieces() && !rp.isRemotePeerChockingLocalPeer) {
+			ArrayList<Integer> interestedList = rp.getInterestedList();
+			int requestIndex = interestedList.get((int)(Math.random() * interestedList.size()));
+			// PeerProcess.write("requesting peer " + m.remotePeerId+" for piece #" + requestIndex);
+			if(PeerProcess.dm.addRequest(requestIndex)) {
+				PeerProcess.messageQueues.get(m.remotePeerIndex).add(RequestHandler.construct(m.remotePeerId, requestIndex));
+				break;
+			}
+		}
+		
+		if (selfPeer.getTotalFilePiecesWeReceived() == PeerProcess.numOfPieces) {
+			selfPeer.hasCompleteFile = true;
+			PeerProcess.write("has downloaded the complete file");
 		}
 	}
 }

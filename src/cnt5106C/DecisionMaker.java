@@ -14,6 +14,9 @@ public class DecisionMaker extends Thread {
 																								// peerInfos.
 	private int optUnchockedPeer = -1;
 
+	private ArrayList<Integer> previousRequestList = new ArrayList<>();
+	private ArrayList<Integer> requestingList = new ArrayList<>();
+	
 	/**
 	 * Update preferred peers
 	 */
@@ -24,7 +27,7 @@ public class DecisionMaker extends Thread {
 					preferredPeers.clear();
 				}
 				
-				if(PeerProcess.peers.get(PeerProcess.index).hasCompletefile) {
+				if(PeerProcess.peers.get(PeerProcess.index).hasCompleteFile) {
 					ArrayList<Integer> interestedPeers = PeerProcess.getInterestedPeers();
 					Collections.shuffle(interestedPeers);
 					for(int peerId: interestedPeers) {
@@ -52,22 +55,21 @@ public class DecisionMaker extends Thread {
 					// iterate over all peers to check and send proper choke/unchoke msgs
 					for (DynamicPeerInfo p : PeerProcess.peers) {
 						if (p.isConnected) {
-							if (preferredPeers.contains(p.peerId) && p.isChoked) {
+							if (preferredPeers.contains(p.peerId) && p.isLocalPeerChockingRemotePeer) {
 								// PeerProcess.write("Unchoking peer " + p.peerId);
 								PeerProcess.messageQueues.get(p.index).add(ChokeUnchokeHandler.construct(p.peerId, false));
-								p.isChoked = false;
+								p.isLocalPeerChockingRemotePeer = false;
 								continue;
 							}
-							if (!preferredPeers.contains(p.peerId) && !p.isChoked && optUnchockedPeer != p.peerId) {
+							if (!preferredPeers.contains(p.peerId) && !p.isLocalPeerChockingRemotePeer && optUnchockedPeer != p.peerId) {
 								// PeerProcess.write("Choking peer " + p.peerId);
 								PeerProcess.messageQueues.get(p.index).add(ChokeUnchokeHandler.construct(p.peerId, true));
-								p.isChoked = true;
+								p.isLocalPeerChockingRemotePeer = true;
 							}
 						}
 					}
+					PeerProcess.write("has the preferred neighbors " + preferredPeers);
 				}
-			
-				PeerProcess.write("has the preferred neighbors " + preferredPeers);
 			}
 		}
 
@@ -79,9 +81,11 @@ public class DecisionMaker extends Thread {
 	private class optimisiticUnchoke extends TimerTask {
 		public void run() {
 			synchronized (preferredPeers) {
+				PeerProcess.checkTermination();
+				
 				ArrayList<Integer> chockedList = new ArrayList<>();
 				for(DynamicPeerInfo p: PeerProcess.peers) {
-					if(p.isChoked && PeerProcess.isPeerInterested(p.peerId)) {
+					if(p.isLocalPeerChockingRemotePeer && PeerProcess.isPeerInterested(p.peerId)) {
 						chockedList.add(p.index);
 					}
 				}
@@ -89,8 +93,39 @@ public class DecisionMaker extends Thread {
 					int index = (int) (Math.random() * chockedList.size());
 					optUnchockedPeer = PeerProcess.peers.get(chockedList.get(index)).peerId;
 					PeerProcess.messageQueues.get(chockedList.get(index)).add(ChokeUnchokeHandler.construct(optUnchockedPeer, false));
-					PeerProcess.peers.get(chockedList.get(index)).isChoked = false;
+					PeerProcess.peers.get(chockedList.get(index)).isLocalPeerChockingRemotePeer = false;
+					PeerProcess.write("has the optimistically unchoked neighbor " + optUnchockedPeer);
 				}
+			}
+		}
+	}
+	
+	private class requestTimeout extends TimerTask {
+		public void run() {
+			synchronized(requestingList) {
+				for(int i = 0; i < previousRequestList.size(); i++) {
+					if(requestingList.contains(previousRequestList.get(i))) {
+						requestingList.remove(Integer.valueOf(previousRequestList.get(i)));
+					}
+				}
+				previousRequestList = requestingList;
+			}
+		}
+	}
+	
+	public void removeRequest(int pieceIndex) {
+		synchronized(requestingList) {
+			requestingList.remove(Integer.valueOf(pieceIndex));
+		}
+	}
+	
+	public boolean addRequest(int pieceIndex) {
+		synchronized(requestingList) {
+			if(requestingList.contains(pieceIndex)) {
+				return false;
+			}else {
+				requestingList.add(pieceIndex);
+				return true;
 			}
 		}
 	}
@@ -102,9 +137,12 @@ public class DecisionMaker extends Thread {
 	public void run() {
 		Timer timerUpdate = new Timer();// create a new Timer
 		Timer timerOptUpdate = new Timer();
+		Timer timerRequestTimeout = new Timer();
 		TimerTask task1 = new optimisiticUnchoke();
 		TimerTask task2 = new updatePreferredPeers();
+		TimerTask task3 = new requestTimeout();
 		timerUpdate.schedule(task1, 1000, PeerProcess.unchokingInterval * 1000);
 		timerOptUpdate.schedule(task2, 6000, PeerProcess.optUnchokingInterval * 1000);
+		timerRequestTimeout.schedule(task3, 0, 3000);
 	}
 }

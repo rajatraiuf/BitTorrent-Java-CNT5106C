@@ -66,7 +66,13 @@ public class BitfieldHandler {
 			}
 		}
 		// PeerProcess.write("Received bit-field message from peer " + m.remotePeerId);
-		PeerProcess.messageQueues.get(m.remotePeerIndex).add(InterestHandler.construct(m.remotePeerId,
-				PeerProcess.peers.get(m.remotePeerIndex).isThereAnyInterestedFilePieces()));
+		if(PeerProcess.peers.get(m.remotePeerIndex).isThereAnyInterestedFilePieces()) {
+			PeerProcess.peers.get(m.remotePeerIndex).isLocalPeerInterestedInRemotePeer = true;
+			PeerProcess.messageQueues.get(m.remotePeerIndex).add(InterestHandler.construct(m.remotePeerId, true));
+		}else {
+			PeerProcess.peers.get(m.remotePeerIndex).isLocalPeerInterestedInRemotePeer = false;
+			PeerProcess.messageQueues.get(m.remotePeerIndex).add(InterestHandler.construct(m.remotePeerId, false));
+		}
+
 	}
 }

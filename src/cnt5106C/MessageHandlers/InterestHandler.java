@@ -31,15 +31,15 @@ public class InterestHandler {
 	 */
 	public static void handle(Message m, boolean isInterested) throws Exception {
 		if (isInterested) {
-			if (!PeerProcess.peers.get(m.remotePeerIndex).isInterested) {
-				PeerProcess.write("received the interested message from " + m.remotePeerId);
-				PeerProcess.peers.get(m.remotePeerIndex).isInterested = true;
-				PeerProcess.addInterestPeer(m.remotePeerId);;
+			PeerProcess.write("received the 'interested' message from " + m.remotePeerId);
+			PeerProcess.peers.get(m.remotePeerIndex).isRemotePeerInterestedInLocalPeer = true;
+			if(!PeerProcess.getInterestedPeers().contains(m.remotePeerId)) {
+				PeerProcess.addInterestPeer(m.remotePeerId);
 			}
-		} else if (PeerProcess.peers.get(m.remotePeerIndex).isInterested) {
-			PeerProcess.write("received the not interested message from " + m.remotePeerId);
-			PeerProcess.peers.get(m.remotePeerIndex).isInterested = false;
-			PeerProcess.removeInterestPeer(m.remotePeerId);;
+		} else {
+			PeerProcess.write("received the 'not interested' message from " + m.remotePeerId);
+			PeerProcess.peers.get(m.remotePeerIndex).isRemotePeerInterestedInLocalPeer = false;
+			PeerProcess.removeInterestPeer(m.remotePeerId);
 		}
 	}
 }

@@ -27,6 +27,8 @@ public class PeerProcess {
 
 	// An array of queues for all the threads to send message to each other.
 	public static List<LinkedBlockingQueue<Message>> messageQueues = new ArrayList<>();
+	
+	public static DecisionMaker dm;
 
 	protected static int preferredNeighborsCount; // The number of preferred neighbors.
 	protected static int unchokingInterval; // The interval of switching unchocking neighbors.
@@ -87,7 +89,11 @@ public class PeerProcess {
 		fileName = Config.getFileName();
 		fileSize = Config.getFileSize();
 		pieceSize = Config.getPieceSize();
-		numOfPieces = fileSize / pieceSize;// How many pieces are there in a file.
+		if(fileSize % pieceSize == 0) {
+			numOfPieces = fileSize / pieceSize;// How many pieces are there in a file.
+		}else {
+			numOfPieces = fileSize / pieceSize + 1;
+		}
 
 		peers = PeerInfo.readPeerInfo(numOfPieces);
 	}
@@ -110,6 +116,20 @@ public class PeerProcess {
 		}
 		return index;
 	}
+	
+	public static void checkTermination() {
+		int numberOfCompleteFiles = 0;
+		for(DynamicPeerInfo p: peers) {
+			if(p.hasCompleteFile) {
+				numberOfCompleteFiles++;
+			}else {
+				break;
+			}
+		}
+		if(numberOfCompleteFiles == peers.size()) {
+			System.exit(0);
+		}
+	}
 
 	/**
 	 * The main function for every peerProcess.
@@ -125,7 +145,7 @@ public class PeerProcess {
 		logger = new Logger(args[0]);
 		index = getIndex(peerId); // Find the index of this process.
 
-		DecisionMaker dm = new DecisionMaker();// The real controller, an individual thread to manage everything
+		dm = new DecisionMaker();// The real controller, an individual thread to manage everything
 		dm.start();
 
 		fileHelper = new FileHelper();
