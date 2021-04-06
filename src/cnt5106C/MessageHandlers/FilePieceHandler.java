@@ -24,7 +24,6 @@ public class FilePieceHandler {
 		PeerProcess.fileHelper.writeFilePieceInByteArray(fileIndex, realFile);
 		DynamicPeerInfo selfPeer = PeerProcess.peers.get(PeerProcess.index);
 		selfPeer.setFilePieceState(fileIndex, true);
-		ArrayList<Integer> peerInterestedList = selfPeer.getInterestedList();
 		for (DynamicPeerInfo p : PeerProcess.peers) {
 			if (p.isConnected) {
 				PeerProcess.messageQueues.get(p.index).put(HaveHandler.construct(p.peerId, fileIndex));

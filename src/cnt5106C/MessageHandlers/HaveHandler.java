@@ -15,7 +15,7 @@ public class HaveHandler {
 
 	public static void handle(Message m) {
 		int fileIndex = ByteBuffer.wrap(m.messagePayload).getInt();
-		PeerProcess.write("received the ‘have’ message from " + m.remotePeerId + " for the piece " + fileIndex);
+		PeerProcess.write("received the have message from " + m.remotePeerId + " for the piece " + fileIndex);
 		PeerProcess.peers.get(m.remotePeerIndex).setFilePieceState(fileIndex, true);
 	}
 }

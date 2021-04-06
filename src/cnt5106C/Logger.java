@@ -13,7 +13,7 @@ public class Logger {
 
     public Logger(String args){
         this.peerId = args;
-        this.logFile = "Logs\\log_peer_"+args+".log";
+        this.logFile = "log_peer_"+args+".log";
     }
 
     public void log(String s) throws IOException {
@@ -27,7 +27,7 @@ public class Logger {
         format.setTimeZone(EST);
         String currentTime = format.format(date);
         FileWriter aWriter = new FileWriter(f, true);
-        aWriter.write(currentTime + ": Peer " + peerId +" " +s + ".\n");
+        aWriter.write(currentTime + ": Peer " + peerId + " " +s + ".\n");
         aWriter.flush();
         aWriter.close();
     }

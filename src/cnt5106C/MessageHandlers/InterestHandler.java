@@ -32,12 +32,12 @@ public class InterestHandler {
 	public static void handle(Message m, boolean isInterested) throws Exception {
 		if (isInterested) {
 			if (!PeerProcess.peers.get(m.remotePeerIndex).isInterested) {
-				PeerProcess.write("received the ‘interested’ message from " + m.remotePeerId);
+				PeerProcess.write("received the interested message from " + m.remotePeerId);
 				PeerProcess.peers.get(m.remotePeerIndex).isInterested = true;
 				PeerProcess.interestedPeerNumber += 1;
 			}
 		} else if (PeerProcess.peers.get(m.remotePeerIndex).isInterested) {
-			PeerProcess.write("received the ‘not interested’ message from " + m.remotePeerId);
+			PeerProcess.write("received the not interested message from " + m.remotePeerId);
 			PeerProcess.peers.get(m.remotePeerIndex).isInterested = false;
 			PeerProcess.interestedPeerNumber -= 1;
 		}

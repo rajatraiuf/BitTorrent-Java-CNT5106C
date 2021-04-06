@@ -32,10 +32,41 @@ public class PeerProcess {
 	protected static int unchokingInterval; // The interval of switching unchocking neighbors.
 	protected static int optUnchokingInterval; // The interval of switching optimistic unchocking neighbors.
 
-	public static int interestedPeerNumber = 0;
+	private static ArrayList<Integer> peerIdOfPeersWhoInterestedInLocalPieces = new ArrayList<Integer>();
 
 	public static FileHelper fileHelper;
 	public static Logger logger;
+	
+	public static void addInterestPeer(int peerId) {
+		synchronized(peerIdOfPeersWhoInterestedInLocalPieces) {
+			peerIdOfPeersWhoInterestedInLocalPieces.add(peerId);
+		}
+	}
+	
+	public static void removeInterestPeer(int peerId) {
+		synchronized(peerIdOfPeersWhoInterestedInLocalPieces) {
+			peerIdOfPeersWhoInterestedInLocalPieces.remove(Integer.valueOf(peerId));
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public static ArrayList<Integer> getInterestedPeers() {
+		synchronized(peerIdOfPeersWhoInterestedInLocalPieces) {
+			return (ArrayList<Integer>) peerIdOfPeersWhoInterestedInLocalPieces.clone();
+		}
+	}
+	
+	public static int getInterestedPeerSize() {
+		synchronized(peerIdOfPeersWhoInterestedInLocalPieces) {
+			return peerIdOfPeersWhoInterestedInLocalPieces.size();
+		}
+	}
+	
+	public static boolean isPeerInterested(int peerId) {
+		synchronized(peerIdOfPeersWhoInterestedInLocalPieces) {
+			return peerIdOfPeersWhoInterestedInLocalPieces.contains(Integer.valueOf(peerId));
+		}
+	}
 
 	public static void write(String msg) {
 		try {

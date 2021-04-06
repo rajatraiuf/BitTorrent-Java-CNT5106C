@@ -7,16 +7,7 @@ package cnt5106C;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-
-class DynamicComparator implements Comparator<DynamicPeerInfo> {
-
-    @Override
-    public int compare(DynamicPeerInfo o1, DynamicPeerInfo o2) {
-		return  o1.chunkCount>o2.chunkCount?0:1;
-    }
-}
 
 public class DynamicPeerInfo {
 	public int index;//Index of the remote peer. Follow the order in peerInfo.cfg
@@ -32,6 +23,8 @@ public class DynamicPeerInfo {
 							  //If the bit at n is 1, then this peer has piece n right now. Do not access it directly
 	public List<Integer> interestedFilePieces;//The filePieces remote peer has and local peer don't. never access it directly, although its public
 	public int chunkCount = 0;
+	public int totalFilePiecesWeReceived = 0;
+	public boolean hasCompletefile;
 	private Object lock = new Object();
 	
 	/**
@@ -57,6 +50,7 @@ public class DynamicPeerInfo {
 		this.port = port;
 		this.index = index;
 		this.hasFileInitially = hasFileInitially;
+		this.hasCompletefile = hasFileInitially;
 		filePieces = new ArrayList<>();
 		for(int i = 0; i < numOfPieces; i++) {
 			if(hasFileInitially) {
@@ -81,11 +75,12 @@ public class DynamicPeerInfo {
 				//setting local peer
 				filePieces.set(index, value);
 				//We never loss a local file piece after we have it, so value must be true
+				totalFilePiecesWeReceived++;
 				for(DynamicPeerInfo p: PeerProcess.peers) {
 					if(p.index != PeerProcess.index) {
 						//If it is a remote peer
-						for(Integer i: p.interestedFilePieces) {
-							if(i == index) {
+						for(int i = 0; i < interestedFilePieces.size(); i++) {
+							if(interestedFilePieces.get(i) == index) {
 								// PeerProcess.write("removing interest " + i);
 								//Since we have the file piece right now, it is not interested any more
 								p.interestedFilePieces.remove(i);
@@ -140,5 +135,23 @@ public class DynamicPeerInfo {
 			result = !interestedFilePieces.isEmpty();
 		}
 		return result;
+	}
+	
+	public int getTotalFilePiecesWeReceived() {
+		synchronized(lock) {
+			return totalFilePiecesWeReceived;
+		}
+	}
+	
+	public void resetChunkCount() {
+		synchronized(lock) {
+			chunkCount = 0;
+		}
+	}
+	
+	public int getChunkCount() {
+		synchronized(lock) {
+			return chunkCount;
+		}
 	}
 }
