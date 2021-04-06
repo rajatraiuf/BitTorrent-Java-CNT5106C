@@ -39,7 +39,7 @@ public class FilePieceHandler {
 		// TODO: Tony, Please have a look
 		PeerProcess.write("has downloaded the piece " + fileIndex + " from " + m.remotePeerId
 				+ ". Now the number of pieces it has is "
-				+ (PeerProcess.numOfPieces - peerInterestedList.size()));
+				+ selfPeer.totalFilePiecesWeReceived);
 		if (!interestedList.isEmpty()) {
 			int requestIndex = interestedList.get((int) (Math.random() * interestedList.size()));
 			PeerProcess.messageQueues.get(m.remotePeerIndex)

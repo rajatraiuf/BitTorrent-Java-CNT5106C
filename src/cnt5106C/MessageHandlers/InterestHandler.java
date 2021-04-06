@@ -34,12 +34,12 @@ public class InterestHandler {
 			if (!PeerProcess.peers.get(m.remotePeerIndex).isInterested) {
 				PeerProcess.write("received the interested message from " + m.remotePeerId);
 				PeerProcess.peers.get(m.remotePeerIndex).isInterested = true;
-				PeerProcess.interestedPeerNumber += 1;
+				PeerProcess.addInterestPeer(m.remotePeerId);;
 			}
 		} else if (PeerProcess.peers.get(m.remotePeerIndex).isInterested) {
 			PeerProcess.write("received the not interested message from " + m.remotePeerId);
 			PeerProcess.peers.get(m.remotePeerIndex).isInterested = false;
-			PeerProcess.interestedPeerNumber -= 1;
+			PeerProcess.removeInterestPeer(m.remotePeerId);;
 		}
 	}
 }
