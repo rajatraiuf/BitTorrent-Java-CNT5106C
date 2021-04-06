@@ -86,7 +86,7 @@ public class DynamicPeerInfo {
 						//If it is a remote peer
 						for(Integer i: p.interestedFilePieces) {
 							if(i == index) {
-								// System.out.println("removing interest " + i);
+								// PeerProcess.write("removing interest " + i);
 								//Since we have the file piece right now, it is not interested any more
 								p.interestedFilePieces.remove(i);
 								break;

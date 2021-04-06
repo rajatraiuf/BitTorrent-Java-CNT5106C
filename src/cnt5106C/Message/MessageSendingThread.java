@@ -24,7 +24,7 @@ public class MessageSendingThread extends Thread{
 		try {
 			output.writeObject(msg);
 			output.flush();
-			//System.out.println("Send a message to peer " + remotePeerIndex );
+			//PeerProcess.write("Send a message to peer " + remotePeerIndex );
 		}catch(IOException e) {
 			e.printStackTrace();
 		}
@@ -53,7 +53,7 @@ public class MessageSendingThread extends Thread{
 	 *Run the thread.
 	 */
 	public void run() {
-		System.out.println("MessageSendingThread start to work.");
+		// PeerProcess.write("MessageSendingThread start to work.");
 		while(true) {
 			try {
 				Message message = queues.get(remotePeerIndex).take();//This is a blocking queue and supposed to be thread safe

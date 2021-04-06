@@ -17,11 +17,11 @@ public class ChokeUnchokeHandler {
 	 */
 	public static Message construct(int remotePeerId, boolean isChoke) {
 		if (isChoke){
-			System.out.println("Sending choke byte field "+remotePeerId);
+			// PeerProcess.write("sending choke to "+remotePeerId);
 			return Message.actualMessageWrapper(remotePeerId, 0 , new byte[0]);
 		}
 		else {
-			System.out.println("Sending unchoke byte field "+remotePeerId);
+			// PeerProcess.write("sending unchoke to "+remotePeerId);
 			return Message.actualMessageWrapper(remotePeerId, 1 , new byte[0]);
 		}
 	}
@@ -33,17 +33,17 @@ public class ChokeUnchokeHandler {
 	public static void handle(Message m, boolean isChoke) throws Exception {
 		//TODO this is just for testing
 		if(isChoke){
-			System.out.println("Received a choke message from peer " + m.remotePeerId);
+			PeerProcess.write("is choked by " + m.remotePeerId);
 		}
 		else{
-			System.out.println("RECEIVED a unchoke message from peer " + m.remotePeerId);
+			PeerProcess.write("is unchoked by " + m.remotePeerId);
 			// Send request if needed
 			DynamicPeerInfo p = PeerProcess.peers.get(m.remotePeerIndex);
 			ArrayList<Integer> interestedList = p.getInterestedList();
-			// System.out.println("Interested list of " + m.remotePeerId + " : " + interestedList);
+			// PeerProcess.write("Interested list of " + m.remotePeerId + " : " + interestedList);
 			if (interestedList.size()>0){
 				int requestIndex = interestedList.get((int)(Math.random() * interestedList.size()));
-				System.out.println("REQUESTING peer " + m.remotePeerId+" for piece #" + requestIndex);
+				// PeerProcess.write("requesting peer " + m.remotePeerId+" for piece #" + requestIndex);
 				PeerProcess.messageQueues.get(m.remotePeerIndex).add(RequestHandler.construct(m.remotePeerId, requestIndex));
 			}
 		}

@@ -41,11 +41,11 @@ public class MessageReceivingThread extends Thread{
 	 *Run the thread.
 	 */
 	public void run() {
-		System.out.println("Message Receiving Thread start to work.");
+		// PeerProcess.write("Message Receiving Thread start to work");
 		while(true) {
 			try {
 				byte[] msg = (byte[]) input.readObject();
-				// System.out.println("Receive message from peer " + remotePeerIndex + ;
+				// PeerProcess.write("Receive message from peer " + remotePeerIndex + ;
 				// After we receive the msg, we put it into the specific queue, and let upstreamHandler decide how to deal with it.
 				queues.get(remotePeerIndex).put(new Message(msg, PeerProcess.peers.get(remotePeerIndex).peerId, true));
 			} catch (IOException | ClassNotFoundException | InterruptedException e) {

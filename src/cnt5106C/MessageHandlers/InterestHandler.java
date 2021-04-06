@@ -4,44 +4,40 @@
 
 package cnt5106C.MessageHandlers;
 
-
-import java.util.Arrays;
-import java.nio.ByteBuffer;
 import cnt5106C.*;
 import cnt5106C.Message.*;
 
 public class InterestHandler {
 	/**
 	 * Construct a Interested message.
+	 * 
 	 * @param remotePeerId the peerid of remote peer
 	 * @return the message just has been constructed
 	 */
 	public static Message construct(int remotePeerId, boolean isInterested) {
-		if (isInterested){
-			System.out.println("Sending interested message to "+remotePeerId);
-			return Message.actualMessageWrapper(remotePeerId, 2 , new byte[0]);
-		}
-		else {
-			System.out.println("Sending not interested message to "+remotePeerId);
-			return Message.actualMessageWrapper(remotePeerId, 3 , new byte[0]);
+		if (isInterested) {
+			// PeerProcess.write("Sending interested message to "+remotePeerId);
+			return Message.actualMessageWrapper(remotePeerId, 2, new byte[0]);
+		} else {
+			// PeerProcess.write("Sending not interested message to "+remotePeerId);
+			return Message.actualMessageWrapper(remotePeerId, 3, new byte[0]);
 		}
 	}
-	
+
 	/**
 	 * Handle a interested/not interested message in a proper way.
+	 * 
 	 * @param m the message to be handled
 	 */
 	public static void handle(Message m, boolean isInterested) throws Exception {
-		//TODO this is just for testing
-		if(isInterested){
-			if(!PeerProcess.peers.get(m.remotePeerIndex).isInterested) {
-				System.out.println("Receive a interested message from peer " + m.remotePeerId);
+		if (isInterested) {
+			if (!PeerProcess.peers.get(m.remotePeerIndex).isInterested) {
+				PeerProcess.write("received the ‘interested’ message from " + m.remotePeerId);
 				PeerProcess.peers.get(m.remotePeerIndex).isInterested = true;
 				PeerProcess.interestedPeerNumber += 1;
 			}
-		}
-		else if(PeerProcess.peers.get(m.remotePeerIndex).isInterested) {
-			System.out.println("Receive a not interested message from peer " + m.remotePeerId);
+		} else if (PeerProcess.peers.get(m.remotePeerIndex).isInterested) {
+			PeerProcess.write("received the ‘not interested’ message from " + m.remotePeerId);
 			PeerProcess.peers.get(m.remotePeerIndex).isInterested = false;
 			PeerProcess.interestedPeerNumber -= 1;
 		}

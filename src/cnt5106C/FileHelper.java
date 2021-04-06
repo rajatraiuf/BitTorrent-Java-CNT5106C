@@ -52,7 +52,7 @@ public class FileHelper {
 	
 	public void writeFilePieceInByteArray(int index, byte[] bytes) throws IOException {
 		synchronized(lock) {
-			// System.out.println("try to write file index " + index);
+			// PeerProcess.write("try to write file index " + index);
 			rf.seek(index * pieceSize);
 			for(int i = 0; i < pieceSize; i++) {
 				rf.writeByte(bytes[i]);

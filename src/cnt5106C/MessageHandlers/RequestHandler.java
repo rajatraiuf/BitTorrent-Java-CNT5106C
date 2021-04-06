@@ -18,7 +18,7 @@ public class RequestHandler {
 	 */
 	public static Message construct(int remotePeerId,int filePieceIndex) {
 		byte[] result = ByteBuffer.allocate(4).putInt(filePieceIndex).array();
-		System.out.println("Sending a request message to peerId "+ remotePeerId+" for file piece index "+ filePieceIndex);
+		PeerProcess.write("Sending a request message to peerId "+ remotePeerId+" for file piece index "+ filePieceIndex);
 		return Message.actualMessageWrapper(remotePeerId, 6, result);
 	}
 	
@@ -31,6 +31,6 @@ public class RequestHandler {
 		if(!PeerProcess.peers.get(m.remotePeerIndex).isChoked) {
 			PeerProcess.messageQueues.get(m.remotePeerIndex).put(FilePieceHandler.construct(m.remotePeerId, payLoad));
 		}
-		System.out.println("Received a request message from peer " + m.remotePeerId + ", for piece index " + payLoad);
+		PeerProcess.write("Received a request message from peer " + m.remotePeerId + ", for piece index " + payLoad);
 	}
 }
