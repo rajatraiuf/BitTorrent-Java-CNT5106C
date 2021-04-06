@@ -62,7 +62,7 @@ public class Message {
 	 */
 	public static Message actualMessageWrapper(int remotePeerId, int messageType, byte[] messagePayload) {
 		ByteBuffer msg = ByteBuffer.allocate(5 + messagePayload.length);
-		msg.put(ByteBuffer.allocate(4).putInt(5 + messagePayload.length).array());
+		msg.put(ByteBuffer.allocate(4).putInt(messagePayload.length).array());
 		msg.put((byte) messageType);
 		msg.put(messagePayload);
 		return new Message(msg.array(), remotePeerId, false);
@@ -94,7 +94,7 @@ public class Message {
 					// PeerProcess.write("No payload found in message");
 					messagePayload = null;
 				} else {
-					messagePayload = Arrays.copyOfRange(msg, 5, messageLength);
+					messagePayload = Arrays.copyOfRange(msg, 5, 5 + messageLength);
 				}
 				switch (messageType) {
 				case 0:
