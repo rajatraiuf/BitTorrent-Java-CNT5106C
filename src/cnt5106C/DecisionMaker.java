@@ -51,25 +51,25 @@ public class DecisionMaker extends Thread {
 					for(DynamicPeerInfo p: PeerProcess.peers) {
 						p.resetChunkCount();
 					}
+				}
 
-					// iterate over all peers to check and send proper choke/unchoke msgs
-					for (DynamicPeerInfo p : PeerProcess.peers) {
-						if (p.isConnected) {
-							if (preferredPeers.contains(p.peerId) && p.isLocalPeerChockingRemotePeer) {
-								// PeerProcess.write("Unchoking peer " + p.peerId);
-								PeerProcess.messageQueues.get(p.index).add(ChokeUnchokeHandler.construct(p.peerId, false));
-								p.isLocalPeerChockingRemotePeer = false;
-								continue;
-							}
-							if (!preferredPeers.contains(p.peerId) && !p.isLocalPeerChockingRemotePeer && optUnchockedPeer != p.peerId) {
-								// PeerProcess.write("Choking peer " + p.peerId);
-								PeerProcess.messageQueues.get(p.index).add(ChokeUnchokeHandler.construct(p.peerId, true));
-								p.isLocalPeerChockingRemotePeer = true;
-							}
+				// iterate over all peers to check and send proper choke/unchoke msgs
+				for (DynamicPeerInfo p : PeerProcess.peers) {
+					if (p.isConnected) {
+						if (preferredPeers.contains(p.peerId) && p.isLocalPeerChockingRemotePeer) {
+							// PeerProcess.write("Unchoking peer " + p.peerId);
+							PeerProcess.messageQueues.get(p.index).add(ChokeUnchokeHandler.construct(p.peerId, false));
+							p.isLocalPeerChockingRemotePeer = false;
+							continue;
+						}
+						if (!preferredPeers.contains(p.peerId) && !p.isLocalPeerChockingRemotePeer && optUnchockedPeer != p.peerId) {
+							// PeerProcess.write("Choking peer " + p.peerId);
+							PeerProcess.messageQueues.get(p.index).add(ChokeUnchokeHandler.construct(p.peerId, true));
+							p.isLocalPeerChockingRemotePeer = true;
 						}
 					}
-					PeerProcess.write("has the preferred neighbors " + preferredPeers);
 				}
+				PeerProcess.write("has the preferred neighbors " + preferredPeers);
 			}
 		}
 

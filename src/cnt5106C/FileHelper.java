@@ -26,7 +26,7 @@ public class FileHelper {
 		if(hasFileInitially) {
 			rf = new RandomAccessFile(path, "rw");
 		}else {
-			File folder = new File("./Files/" + PeerProcess.peerId);
+			File folder = new File("./" + PeerProcess.peerId);
 			folder.mkdir();
 			File file = new File(path);
 			file.createNewFile();

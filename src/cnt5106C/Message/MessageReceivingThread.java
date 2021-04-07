@@ -7,6 +7,7 @@ package cnt5106C.Message;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
 import cnt5106C.*;
@@ -48,7 +49,10 @@ public class MessageReceivingThread extends Thread{
 				// PeerProcess.write("Receive message from peer " + remotePeerIndex + ;
 				// After we receive the msg, we put it into the specific queue, and let upstreamHandler decide how to deal with it.
 				queues.get(remotePeerIndex).put(new Message(msg, PeerProcess.peers.get(remotePeerIndex).peerId, true));
-			} catch (IOException | ClassNotFoundException | InterruptedException e) {
+			} catch(SocketException e) {
+				System.exit(0);
+			}
+			catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
