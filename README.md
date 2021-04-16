@@ -17,11 +17,14 @@ Demonstration
 + bitfield implementation
   
   + We implement bitfield as a list of boolean stored in each DynamicPeerInfo. Index i is true indicate this peer has ith file piece. When we instanciate the DynamicPeerInfo, if this peer has file initially, we set all boolean to 1; otherwize to 0. When we receive a bitfield/have/filePiece message, we reset these booleans accroding to the context of the message.
+
 + sending and receiving interested/not-interested messages
+
   + We only send interested/not-interested messages when the state of interest is changed
   + When we receive bitfild/have messages, if there is any file piece they have but we don't, then we send an interested message. Otherwise we send not interested message.
   + When we receive any file piece, we check if we are not interested in some peers anymore. If that is the case, we send not interested message.
   + When we receive an interested/not interested message, we modify the information in DynamicPeerProcess, so the DecisionMaker know who to unchock
+
 +  choke/unchoke/optimistic unchoking
   + We keep track of if we are choking/unchoking and if we are choked/unchoked by all the other peers in the array of DynamicPeerInfos
   + Each peer has k preferred neighbors and 1 optunchoed neighbor, if there are enough peers makes TCP connection to it
@@ -30,6 +33,7 @@ Demonstration
   + When we do not have complete file, we sort all the other interested peers by their comtribution to us during the last interval, then choose the first k peers
   + We choose optimistically unchocked peer randomly from all the peers that are choked and interested in us
   + We check if the remote peer is choked before sending any file piece, in case we send a choked message but the remote peer has not received it/processed it yet
+
 + request and have messages
   + We send request message in two cases: receive an unchock and receive a filepiece. We only send it if we have at least one interested file in the remote peer and we have not requested it from any other peers
   +  We send have message to all the other peers when we receive a file piece.
@@ -40,6 +44,7 @@ Demonstration
   + When we need to generate file piece, we use the piece index to calculate the right pointer to seek the file, then read a byte array of piece size, and finally wrap it into a file piece message.
   + Pieces are transferred as the payload of file piece message
   + When we receive a file piece message, we overwirte the specific place of the file with the byte array payload
+
 + termination of all peers/file being received by all peers
   + We keep track of how many file piece we and other peers have received
   + When we receive a file piece or have message, we check if it is a good time to terminate
