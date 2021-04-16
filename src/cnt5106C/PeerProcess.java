@@ -117,7 +117,7 @@ public class PeerProcess {
 		return index;
 	}
 	
-	public static void checkTermination() {
+	public static void checkTermination() throws InterruptedException {
 		int numberOfCompleteFiles = 0;
 		for(DynamicPeerInfo p: peers) {
 			if(p.hasCompleteFile) {
@@ -127,6 +127,10 @@ public class PeerProcess {
 			}
 		}
 		if(numberOfCompleteFiles == peers.size()) {
+			for(DynamicPeerInfo p: peers) {
+				p.isConnected = false;
+			}
+			Thread.sleep(1000);//wait for all logs to be written
 			System.exit(0);
 		}
 	}

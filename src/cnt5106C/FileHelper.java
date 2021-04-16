@@ -43,19 +43,33 @@ public class FileHelper {
 		synchronized(lock) {
 			rf.seek(index*pieceSize);
 			byte[] buffer = new byte[pieceSize];
-			for(int i = 0; i < pieceSize; i++) {
-				buffer[i] = rf.readByte();
+			if(index == PeerProcess.numOfPieces - 1) {//last byte, might not be full
+				int readSize = PeerProcess.fileSize - index * pieceSize;
+				for(int i = 0; i < readSize; i++) {
+					buffer[i] = rf.readByte();
+				}
+				return buffer;
+			}else {
+				for(int i = 0; i < pieceSize; i++) {
+					buffer[i] = rf.readByte();
+				}
+				return buffer;
 			}
-			return buffer;
 		}
 	}
 	
 	public void writeFilePieceInByteArray(int index, byte[] bytes) throws IOException {
 		synchronized(lock) {
-			// PeerProcess.write("try to write file index " + index);
 			rf.seek(index * pieceSize);
-			for(int i = 0; i < pieceSize; i++) {
-				rf.writeByte(bytes[i]);
+			if(index == PeerProcess.numOfPieces - 1) {//last byte, might not be full
+				int writeSize = PeerProcess.fileSize - index * pieceSize;
+				for(int i = 0; i < writeSize; i++) {
+					rf.writeByte(bytes[i]);
+				}
+			}else {
+				for(int i = 0; i < pieceSize; i++) {
+					rf.writeByte(bytes[i]);
+				}
 			}
 		}
 	}

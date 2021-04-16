@@ -81,7 +81,11 @@ public class DecisionMaker extends Thread {
 	private class optimisiticUnchoke extends TimerTask {
 		public void run() {
 			synchronized (preferredPeers) {
-				PeerProcess.checkTermination();
+				try {
+					PeerProcess.checkTermination();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 				
 				ArrayList<Integer> chockedList = new ArrayList<>();
 				for(DynamicPeerInfo p: PeerProcess.peers) {
@@ -143,6 +147,6 @@ public class DecisionMaker extends Thread {
 		TimerTask task3 = new requestTimeout();
 		timerUpdate.schedule(task1, 1000, PeerProcess.unchokingInterval * 1000);
 		timerOptUpdate.schedule(task2, 6000, PeerProcess.optUnchokingInterval * 1000);
-		timerRequestTimeout.schedule(task3, 0, 3000);
+		timerRequestTimeout.schedule(task3, 0, 10000);
 	}
 }

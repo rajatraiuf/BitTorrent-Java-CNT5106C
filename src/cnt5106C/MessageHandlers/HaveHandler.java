@@ -13,7 +13,7 @@ public class HaveHandler {
 		return Message.actualMessageWrapper(remotePeerId, 4, msg.array());
 	}
 
-	public static void handle(Message m) {
+	public static void handle(Message m) throws InterruptedException {
 		int fileIndex = ByteBuffer.wrap(m.messagePayload).getInt();
 		PeerProcess.write("received the 'have' message from " + m.remotePeerId + " for the piece " + fileIndex);
 		PeerProcess.peers.get(m.remotePeerIndex).setFilePieceState(fileIndex, true);

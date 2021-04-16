@@ -17,7 +17,7 @@ public class BitfieldHandler {
 	public static Message construct(int remotePeerId) {
 		byte[] messagePayload;// The payload of bitfield;
 
-		int numOfPieces = PeerProcess.fileSize / PeerProcess.pieceSize;
+		int numOfPieces = PeerProcess.numOfPieces;
 		int numOfZeros = (8 - (numOfPieces % 8)) % 8;// Number of zero we need to add in the end
 		int numOfPayloadBytes = (numOfPieces + numOfZeros) / 8;
 
@@ -51,7 +51,7 @@ public class BitfieldHandler {
 	public static void handle(Message m) throws Exception {
 		byte[] payLoad = m.messagePayload;
 
-		int numOfPieces = PeerProcess.fileSize / PeerProcess.pieceSize;
+		int numOfPieces = PeerProcess.numOfPieces;
 		int numOfZeros = (8 - (numOfPieces % 8)) % 8;// Number of zero we need to add in the end
 		int numOfPayloadBytes = (numOfPieces + numOfZeros) / 8;
 		for (int i = 0; i < numOfPayloadBytes; i++) {// For each byte in payload

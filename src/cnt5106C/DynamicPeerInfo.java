@@ -72,12 +72,12 @@ public class DynamicPeerInfo {
 		}
 	}			
 	
-	public void setFilePieceState(int index, boolean value) {
+	public void setFilePieceState(int fileIndex, boolean value) {
 		if(PeerProcess.index == this.index) {
 			// System.out.print("setting local file piece " + index);
 			//setting local peer
 			synchronized(lock) {
-				filePieces.set(index, value);
+				filePieces.set(fileIndex, value);
 				//We never loss a local file piece after we have it, so value must be true
 				totalFilePiecesReceived++;
 			}
@@ -86,7 +86,7 @@ public class DynamicPeerInfo {
 					if(p.index != PeerProcess.index) {
 						//If it is a remote peer
 						for(int i = 0; i < p.interestedFilePieces.size(); i++) {
-							if(p.interestedFilePieces.get(i) == index) {
+							if(p.interestedFilePieces.get(i) == fileIndex) {
 								// PeerProcess.write("removing interest " + i);
 								//Since we have the file piece right now, it is not interested any more
 								p.interestedFilePieces.remove(i);
@@ -99,16 +99,16 @@ public class DynamicPeerInfo {
 		}else {
 			synchronized(lock) {
 				//setting remote peer
-				filePieces.set(index, value);
+				filePieces.set(fileIndex, value);
 				if(value == true) {
 					totalFilePiecesReceived++;
 					if(totalFilePiecesReceived == PeerProcess.numOfPieces) {
 						hasCompleteFile = true;
 					}
 				}
-				if(value == true && PeerProcess.peers.get(PeerProcess.index).filePieces.get(index) == false) {
+				if(value == true && PeerProcess.peers.get(PeerProcess.index).filePieces.get(fileIndex) == false) {
 					//They have it, we don't, so we are interested in it
-					interestedFilePieces.add(Integer.valueOf(index));
+					interestedFilePieces.add(Integer.valueOf(fileIndex));
 				}
 			}
 		}

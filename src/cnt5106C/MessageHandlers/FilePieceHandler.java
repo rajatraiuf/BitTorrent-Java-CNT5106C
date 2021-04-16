@@ -21,9 +21,15 @@ public class FilePieceHandler {
 		byte[] fileIndexInByte = Arrays.copyOfRange(m.messagePayload, 0, 4);
 		byte[] realFile = Arrays.copyOfRange(m.messagePayload, 4, 4 + PeerProcess.pieceSize);
 		int fileIndex = ByteBuffer.wrap(fileIndexInByte).getInt();
-		PeerProcess.fileHelper.writeFilePieceInByteArray(fileIndex, realFile);
 		DynamicPeerInfo selfPeer = PeerProcess.peers.get(PeerProcess.index);
+		if(selfPeer.getFilePieceState(fileIndex) == true) {
+			return;//In a rare scenario, the request timeout is reset, but the request
+			//is not actually dropped, then we may receive duplicate file piece 
+		}
+
 		selfPeer.setFilePieceState(fileIndex, true);
+		PeerProcess.fileHelper.writeFilePieceInByteArray(fileIndex, realFile);
+
 		for (DynamicPeerInfo p : PeerProcess.peers) {
 			if (p.isConnected) {
 				PeerProcess.messageQueues.get(p.index).put(HaveHandler.construct(p.peerId, fileIndex));
@@ -37,10 +43,10 @@ public class FilePieceHandler {
 		PeerProcess.dm.removeRequest(fileIndex);
 
 		DynamicPeerInfo rp = PeerProcess.peers.get(m.remotePeerIndex);
-		rp.incrementChunkCounter();
 		PeerProcess.write("has downloaded the piece " + fileIndex + " from " + m.remotePeerId
 				+ ". Now the number of pieces it has is "
 				+ selfPeer.getTotalFilePiecesWeReceived());
+		rp.incrementChunkCounter();
 		
 		while(rp.isThereAnyInterestedFilePieces() && !rp.isRemotePeerChockingLocalPeer) {
 			Integer requestIndex;
@@ -58,7 +64,6 @@ public class FilePieceHandler {
 			selfPeer.hasCompleteFile = true;
 			PeerProcess.write("has downloaded the complete file");
 		}
-		
 		PeerProcess.checkTermination();
 	}
 }
