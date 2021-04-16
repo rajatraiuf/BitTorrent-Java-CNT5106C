@@ -43,10 +43,8 @@ public class FilePieceHandler {
 				+ selfPeer.getTotalFilePiecesWeReceived());
 		
 		while(rp.isThereAnyInterestedFilePieces() && !rp.isRemotePeerChockingLocalPeer) {
-			ArrayList<Integer> interestedList = rp.getInterestedList();
-			if(!interestedList.isEmpty()) {
-				int requestIndex = interestedList.get((int)(Math.random() * interestedList.size()));
-				// PeerProcess.write("requesting peer " + m.remotePeerId+" for piece #" + requestIndex);
+			Integer requestIndex;
+			if((requestIndex = rp.getAnInterestedIndex()) != null) {
 				if(PeerProcess.dm.addRequest(requestIndex)) {
 					PeerProcess.messageQueues.get(m.remotePeerIndex).add(RequestHandler.construct(m.remotePeerId, requestIndex));
 					break;

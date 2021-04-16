@@ -21,9 +21,9 @@ public class Logger {
     }
 
     public void log(String f, String s) throws IOException {
-        TimeZone EST = TimeZone.getTimeZone("EST");
+        TimeZone EST = TimeZone.getTimeZone("GMT-4:00");
         Date date = new Date();
-        DateFormat format = new SimpleDateFormat("yyyy.mm.dd hh:mm:ss ");
+        DateFormat format = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss ");
         format.setTimeZone(EST);
         String currentTime = format.format(date);
         FileWriter aWriter = new FileWriter(f, true);

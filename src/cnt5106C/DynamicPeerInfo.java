@@ -27,7 +27,7 @@ public class DynamicPeerInfo {
 	private int chunkCount = 0;
 	private int totalFilePiecesReceived = 0;
 	public boolean hasCompleteFile;
-	private Object lock = new Object();
+	public Object lock = new Object();
 	
 	/**
 	 * The constructor of PeerInfo data structure.
@@ -73,14 +73,16 @@ public class DynamicPeerInfo {
 	}			
 	
 	public void setFilePieceState(int index, boolean value) {
-		synchronized(lock){
-			if(PeerProcess.index == this.index) {
-				// System.out.print("setting local file piece " + index);
-				//setting local peer
+		if(PeerProcess.index == this.index) {
+			// System.out.print("setting local file piece " + index);
+			//setting local peer
+			synchronized(lock) {
 				filePieces.set(index, value);
 				//We never loss a local file piece after we have it, so value must be true
 				totalFilePiecesReceived++;
-				for(DynamicPeerInfo p: PeerProcess.peers) {
+			}
+			for(DynamicPeerInfo p: PeerProcess.peers) {
+				synchronized(p.lock) {
 					if(p.index != PeerProcess.index) {
 						//If it is a remote peer
 						for(int i = 0; i < p.interestedFilePieces.size(); i++) {
@@ -93,7 +95,9 @@ public class DynamicPeerInfo {
 						}
 					}
 				}
-			}else {
+			}
+		}else {
+			synchronized(lock) {
 				//setting remote peer
 				filePieces.set(index, value);
 				if(value == true) {
@@ -137,6 +141,17 @@ public class DynamicPeerInfo {
 			temp = (ArrayList<Integer>) interestedFilePieces;
 		}
 		return temp;
+	}
+	
+	public Integer getAnInterestedIndex() {
+		synchronized(lock) {
+			if(interestedFilePieces.isEmpty()) {
+				return null;
+			}else {
+				int requestIndex = interestedFilePieces.get((int)(Math.random() * interestedFilePieces.size()));
+				return requestIndex;
+			}
+		}
 	}
 	
 	public boolean isThereAnyInterestedFilePieces() {
