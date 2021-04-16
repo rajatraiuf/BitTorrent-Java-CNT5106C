@@ -25,7 +25,7 @@ Demonstration
   + When we receive any file piece, we check if we are not interested in some peers anymore. If that is the case, we send not interested message.
   + When we receive an interested/not interested message, we modify the information in DynamicPeerProcess, so the DecisionMaker know who to unchock
 
-+  choke/unchoke/optimistic unchoking
++ choke/unchoke/optimistic unchoking
   + We keep track of if we are choking/unchoking and if we are choked/unchoked by all the other peers in the array of DynamicPeerInfos
   + Each peer has k preferred neighbors and 1 optunchoed neighbor, if there are enough peers makes TCP connection to it
   + We use two java.util.TimerTask in Decesion maker to change preferred peers and optimistically unchoked peer. The interval of timer is read from PeerProcess, which got from common.cfg
