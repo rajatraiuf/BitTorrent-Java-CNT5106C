@@ -1,11 +1,11 @@
 /*
  * The handler to handle any functionalities about handshake message.
  */
-package cnt5106C.MessageHandlers;
+package cnt5106C;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
-import cnt5106C.*;
+
 import cnt5106C.Message.*;
 
 public class HandshakeHandler {

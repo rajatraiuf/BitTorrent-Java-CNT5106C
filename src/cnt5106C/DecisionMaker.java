@@ -6,8 +6,6 @@ package cnt5106C;
 
 import java.util.*;
 
-import cnt5106C.MessageHandlers.ChokeUnchokeHandler;
-
 public class DecisionMaker extends Thread {
 	private ArrayList<Integer> preferredPeers = new ArrayList<Integer>();                       // An array that
 																								// maintains preferred

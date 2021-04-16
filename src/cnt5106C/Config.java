@@ -2,7 +2,7 @@
  * The component to read common.cfg.
  */
 
-package cnt5106C.config;
+package cnt5106C;
 
 import java.util.*;
 import java.io.*;

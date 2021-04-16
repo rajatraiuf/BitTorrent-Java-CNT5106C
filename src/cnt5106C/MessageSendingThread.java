@@ -2,15 +2,13 @@
  * The thread responsible for sending messages to another host.
  */
 
-package cnt5106C.Message;
+package cnt5106C;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
-import cnt5106C.*;
 
 public class MessageSendingThread extends Thread{
 	private Socket socket; //The socket connected to the remote host.

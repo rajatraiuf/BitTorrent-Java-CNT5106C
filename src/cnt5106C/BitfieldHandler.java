@@ -2,9 +2,8 @@
  * The handler to handle any functionalities about bitfield message.
  */
 
-package cnt5106C.MessageHandlers;
+package cnt5106C;
 
-import cnt5106C.*;
 import cnt5106C.Message.*;
 
 public class BitfieldHandler {

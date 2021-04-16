@@ -2,12 +2,10 @@
  * The handler to handle any functionalities about interested/not interested message.
  */
 
-package cnt5106C.MessageHandlers;
+package cnt5106C;
 
 
 import java.nio.ByteBuffer;
-import cnt5106C.*;
-import cnt5106C.Message.*;
 
 public class RequestHandler {
 	/**
@@ -30,6 +28,7 @@ public class RequestHandler {
 		int payLoad = ByteBuffer.wrap(m.messagePayload).getInt();
 		if(!PeerProcess.peers.get(m.remotePeerIndex).isLocalPeerChockingRemotePeer) {
 			PeerProcess.messageQueues.get(m.remotePeerIndex).put(FilePieceHandler.construct(m.remotePeerId, payLoad));
+			//PeerProcess.write("SEND");
 		}
 		PeerProcess.write("Received a request message from peer " + m.remotePeerId + ", for piece index " + payLoad);
 	}

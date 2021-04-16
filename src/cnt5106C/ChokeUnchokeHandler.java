@@ -2,11 +2,11 @@
  * The handler to handle any functionalities about interested/not interested message.
  */
 
-package cnt5106C.MessageHandlers;
+package cnt5106C;
 
 
 import java.util.ArrayList;
-import cnt5106C.*;
+
 import cnt5106C.Message.*;
 
 public class ChokeUnchokeHandler {

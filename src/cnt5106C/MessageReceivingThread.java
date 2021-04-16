@@ -2,7 +2,7 @@
  * The thread responsible for receiving messages from another host.
  */
 
-package cnt5106C.Message;
+package cnt5106C;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -10,7 +10,6 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.List;
 import java.util.concurrent.LinkedBlockingQueue;
-import cnt5106C.*;
 
 public class MessageReceivingThread extends Thread{
 	private Socket socket; //The socket connected to the remote host.

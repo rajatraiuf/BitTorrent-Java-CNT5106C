@@ -51,6 +51,26 @@ Demonstration
   + When everyone has a complete file, we decide to terminate. Then we wait for 1 second in case log has not been fully written
   + When we find a Socket Exception in Message Receiving thread, that means the peer on the other side has already terminated. That means that peer found out everyone has a complete file. Then we just terminate.
 
+
+
+Demo
+
+javac cnt5106C/PeerProcess.java
+
+ssh lin114-00.cise.ufl.edu "cd CNT1 ; java cnt5106C.PeerProcess 1001"
+
+ssh lin114-01.cise.ufl.edu "cd CNT1 ; java cnt5106C.PeerProcess 1002"
+
+ssh lin114-02.cise.ufl.edu "cd CNT1 ; java cnt5106C.PeerProcess 1003" 
+
+ssh lin114-03.cise.ufl.edu "cd CNT1 ; java cnt5106C.PeerProcess 1004" 
+
+ssh lin114-04.cise.ufl.edu "cd CNT1 ; java cnt5106C.PeerProcess 1005"
+
+ssh lin114-05.cise.ufl.edu "cd CNT1 ; java cnt5106C.PeerProcess 1006"
+
+
+
 Contribution
 
 Qiyue Zhu

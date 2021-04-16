@@ -2,13 +2,10 @@
  * The component to read peerInfo.cfg.
  */
 
-package cnt5106C.config;
+package cnt5106C;
 
 import java.io.*;
-import java.util.List;
 import java.util.ArrayList;
-
-import cnt5106C.DynamicPeerInfo;
 import java.io.IOException;
 
 public class PeerInfo {

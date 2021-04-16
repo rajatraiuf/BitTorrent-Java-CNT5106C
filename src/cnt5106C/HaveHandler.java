@@ -1,10 +1,7 @@
-package cnt5106C.MessageHandlers;
+package cnt5106C;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-
-import cnt5106C.PeerProcess;
-import cnt5106C.Message.Message;
 
 public class HaveHandler {
 	public static Message construct(int remotePeerId, int index) throws IOException {

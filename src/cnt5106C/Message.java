@@ -2,12 +2,10 @@
  * The data structure which is used by different threads in a host to communicate with each other.
  */
 
-package cnt5106C.Message;
+package cnt5106C;
 
 import java.nio.*;
 import java.util.Arrays;
-import cnt5106C.*;
-import cnt5106C.MessageHandlers.*;
 
 public class Message {
 	public byte[] msg;// The context of the msg
