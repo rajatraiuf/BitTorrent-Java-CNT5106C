@@ -80,4 +80,6 @@ Qiyue Zhu
 + implement Message, and its sending/receiving thread
 + implement bitfield and handshake handler
 + participate in debug and rewrite of some problematic functions
-
+Lin Huang
++ Implement File Handler and Transfer between hosts
++ Read Pre-exiting Config files
