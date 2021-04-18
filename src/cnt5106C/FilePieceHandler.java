@@ -23,11 +23,15 @@ public class FilePieceHandler {
 			//is not actually dropped, then we may receive duplicate file piece 
 		}
 
+		PeerProcess.write("has downloaded the piece " + fileIndex + " from " + m.remotePeerId
+				+ ". Now the number of pieces it has is "
+				+ (selfPeer.getTotalFilePiecesWeReceived() + 1));
 		selfPeer.setFilePieceState(fileIndex, true);
 		PeerProcess.fileHelper.writeFilePieceInByteArray(fileIndex, realFile);
 
 		for (DynamicPeerInfo p : PeerProcess.peers) {
 			if (p.isConnected) {
+				//PeerProcess.write("send have message to " + p.peerId);
 				PeerProcess.messageQueues.get(p.index).put(HaveHandler.construct(p.peerId, fileIndex));
 				if (!p.isThereAnyInterestedFilePieces() && p.isLocalPeerInterestedInRemotePeer) {
 					p.isLocalPeerInterestedInRemotePeer = false;
@@ -39,9 +43,6 @@ public class FilePieceHandler {
 		PeerProcess.dm.removeRequest(fileIndex);
 
 		DynamicPeerInfo rp = PeerProcess.peers.get(m.remotePeerIndex);
-		PeerProcess.write("has downloaded the piece " + fileIndex + " from " + m.remotePeerId
-				+ ". Now the number of pieces it has is "
-				+ selfPeer.getTotalFilePiecesWeReceived());
 		rp.incrementChunkCounter();
 		
 		while(rp.isThereAnyInterestedFilePieces() && !rp.isRemotePeerChockingLocalPeer) {
@@ -56,10 +57,6 @@ public class FilePieceHandler {
 			}
 		}
 		
-		if (selfPeer.getTotalFilePiecesWeReceived() == PeerProcess.numOfPieces) {
-			selfPeer.hasCompleteFile = true;
-			PeerProcess.write("has downloaded the complete file");
-		}
 		PeerProcess.checkTermination();
 	}
 }

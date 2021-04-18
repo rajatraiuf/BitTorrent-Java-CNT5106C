@@ -49,15 +49,9 @@ public class MessageReceivingThread extends Thread{
 				// After we receive the msg, we put it into the specific queue, and let upstreamHandler decide how to deal with it.
 				queues.get(remotePeerIndex).put(new Message(msg, PeerProcess.peers.get(remotePeerIndex).peerId, true));
 			} catch(SocketException e) {
-				for(DynamicPeerInfo p: peers) {
-					p.isConnected = false;
-				}
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e1) {
-					e1.printStackTrace();
-				}//wait for all logs to be written
-				System.exit(0);
+				//PeerProcess.write("terminate because of Exception");
+				Terminator t = new Terminator();
+				t.start();
 			}
 			catch (Exception e) {
 				e.printStackTrace();

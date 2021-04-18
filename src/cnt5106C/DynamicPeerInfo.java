@@ -80,6 +80,10 @@ public class DynamicPeerInfo {
 				filePieces.set(fileIndex, value);
 				//We never loss a local file piece after we have it, so value must be true
 				totalFilePiecesReceived++;
+				if (totalFilePiecesReceived == PeerProcess.numOfPieces) {
+					hasCompleteFile = true;
+					PeerProcess.write("has downloaded the complete file");
+				}
 			}
 			for(DynamicPeerInfo p: PeerProcess.peers) {
 				synchronized(p.lock) {
@@ -102,6 +106,7 @@ public class DynamicPeerInfo {
 				filePieces.set(fileIndex, value);
 				if(value == true) {
 					totalFilePiecesReceived++;
+					//PeerProcess.write(" " + peerId + " totalFilePiecesReceived " + totalFilePiecesReceived);
 					if(totalFilePiecesReceived == PeerProcess.numOfPieces) {
 						hasCompleteFile = true;
 					}

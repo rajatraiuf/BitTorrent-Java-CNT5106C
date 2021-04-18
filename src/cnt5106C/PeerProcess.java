@@ -117,16 +117,15 @@ public class PeerProcess {
 		for(DynamicPeerInfo p: peers) {
 			if(p.hasCompleteFile) {
 				numberOfCompleteFiles++;
+				//write(p.peerId + " has completeFIle");
 			}else {
 				break;
 			}
 		}
 		if(numberOfCompleteFiles == peers.size()) {
-			for(DynamicPeerInfo p: peers) {
-				p.isConnected = false;
-			}
-			Thread.sleep(1000);//wait for all logs to be written
-			System.exit(0);
+			//PeerProcess.write("terminate because of Checking");
+			Terminator t = new Terminator();
+			t.start();
 		}
 	}
 
